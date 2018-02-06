@@ -17,30 +17,31 @@ and open the template in the editor.
         <script src="Scripts/jquery-3.3.1.min.js" type="text/javascript"></script>
         <script src="Scripts/recorder.js" type="text/javascript"></script>
         <script src="Scripts/wavesurfer.min.js" type="text/javascript"></script>
+        <script src="Scripts/PLTravers.js" type="text/javascript"></script>
     </head>
     <body>
         
-        <div class="animated bounceInDown">
-
-            <h1>Welcome to the Story Bank!</h1>
-        
-            <p>Listen to our stories</p>
-            
-            
-        <!--    This section normally displays it's stuff based on the url parameters, am I right? 
-                I guess I could have it do something more complex, but I'll want the sections broken up correctly. -->
-        
-        <?php echo "You put your code in here!";  ?>
-            
-            
-        
-        <aside>This ought to display the required bits and pieces for the PL Travers Building</aside>
-        
-
-        
-        
+        <div class="container animated bounceInDown">
+            <a href="Admin/admin.php">Admin</a>
+            <a href="Playback/playback.php">Playback</a>
+            <a href="Record/record.php">Record</a>            
         </div>
         
+        <div class="container animated bounceInDown">
+
+            <h1>Welcome to the Story Bank!</h1>
+            
+            <h1>Testing voice recording</h1>
+
+            <p>
+                <button onclick="startRecording(this);">record</button>
+                <button onclick="stopRecording(this);" disabled>stop</button>
+
+                <h2>Recordings</h2>
+                <ul id="recordingslist"></ul>
+            </p>
+
+        </div>
         
     </body>
 </html>
