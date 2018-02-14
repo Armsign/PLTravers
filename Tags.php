@@ -5,7 +5,7 @@
  *
  * @author PaulDunn
  */
-class Tag
+class Tags
 {
     
     public $id = 0;

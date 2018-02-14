@@ -6,7 +6,7 @@
  *
  * @author PaulDunn
  */
-class Deposit 
+class Deposits
 {
     
     public $id = 0;

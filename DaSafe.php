@@ -19,6 +19,21 @@ class DaSafe
     }
     
     /*
+     *      Fetch the Admin view? Or create something a bit less stupids, maybe?
+     *      You know I'm asking for an async data table that pages naturally right ...
+     *      Perhaps that's a bit overkillish for this one though ;p
+     *      Anyways ... all things considered it's not such a big deal.
+     */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /*
      *      Fetch all those tags
      */
     public function fetchTags()

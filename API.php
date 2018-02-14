@@ -19,6 +19,24 @@ function Deposit()
 
 function Withdraw()
 {
+    //  Instanciate and call
+    $mySafe = new DaSafe($configs);
+    $results = $mySafe->fetchTags();
+
+    echo "Hi there big fella, here's that data you were looking for!";
+
+    echo "<br/>";
+
+    //  Ok and we now should have a connection to the database ...
+    //  Be good to return json though, wouldn't it?
+    foreach($results as $key => $value)
+    {
+        echo json_encode($value);
+    }
+
+    echo "<br/>";
+
+    echo $_GET['action'] . '!';
     
     
     return;
@@ -39,55 +57,10 @@ switch($_GET["action"])
     case ("withdraw"):
         Withdraw();
         break;    
-    case ("Administer"):
+    case ("administer"):
         Administer();
-        break;    
-    case (""):
-        break;    
+        break;     
     default: 
         echo "Bad API Call";
         break;
 }
-
-
-
-
-
-//  Instanciate and call
-$mySafe = new DaSafe($configs);
-$results = $mySafe->fetchTags();
-
-echo "Hi there big fella, here's that data you were looking for!";
-
-echo "<br/>";
-
-//  Ok and we now should have a connection to the database ...
-//  Be good to return json though, wouldn't it?
-foreach($results as $key => $value)
-{
-    echo json_encode($value);
-}
-
-echo "<br/>";
-
-echo $_GET['action'] . '!';
-
-//  Ok, start identifying end points ...
-
-//  Display Playable Audio & Transcripts ...
-
-//  Deposit Audio & Transcripts ...
-
-//  Access Deposit Record for Admin
-
-
-
-
-
-
-
-
-
-
-
-
