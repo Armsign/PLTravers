@@ -6,19 +6,20 @@
  * and open the template in the editor.
  */
 
-require_once("Tag.php"); 
-require_once("Deposit.php"); 
+require_once("Logins.php"); 
+require_once("Tags.php"); 
+require_once("Deposits.php"); 
 require_once("DaSafe.php"); 
-
 
 function Deposit()
 {
-    
+    echo 'Deposit Attempted';
     return;
 }
 
 function Withdraw()
 {
+    /*
     //  Instanciate and call
     $mySafe = new DaSafe($configs);
     $results = $mySafe->fetchTags();
@@ -38,12 +39,39 @@ function Withdraw()
 
     echo $_GET['action'] . '!';
     
+     * 
+     */
     
+    echo 'Withdrawal Attempted';
     return;
 }
 
 function Administer()
-{
+{    
+    switch ($_GET["method"])
+    {
+        case ("login"):
+            $login = new Logins();                    
+            return $login->Authenticate($_GET["email"], $_GET["password"]);
+        case ("relogin"):
+            $login = new Logins();          
+            return $login->ReAuthenticate($_GET["token"]);
+        case ("newStories"):
+            $mySafe = new DaSafe();            
+            echo json_encode($mySafe->fetchNewStories($_GET["token"]));
+            break;
+        case ("flaggedStories"):
+            $mySafe = new DaSafe();            
+            echo json_encode($mySafe->fetchFlaggedStories($_GET["token"]));            
+            break;
+        case ("members"):
+            $mySafe = new DaSafe();            
+            echo json_encode($mySafe->fetchMembers($_GET["token"]));                        
+            break;
+        default:
+            echo 'Administration Attempted';
+            break;       
+    }
     
     return;
 }
