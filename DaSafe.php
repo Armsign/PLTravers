@@ -64,7 +64,7 @@ class DaSafe
             $returnArray = $this->executeSQL(
                     "SELECT D.ID, D.TITLE, D.STORED_BY, D.STORED_ON, D.AUDIO_TYPE, D.AUDIO_LENGTH, D.TRANSCRIPTION, D.RECEIVED_BY, D.RECEIVED_ON "
                     . "FROM DEPOSIT_FLAGS DF, DEPOSITS D "
-                    . "WHERE DF.REVEIWED_BY = 0 "
+                    . "WHERE DF.REVIEWED_BY = 0 "
                     . "AND DF.IS_INAPPROPRIATE = 1 "
                     . "AND DF.DEPOSIT = D.ID "
                     . "ORDER BY D.STORED_ON DESC");                                        
@@ -125,7 +125,7 @@ class DaSafe
     }
     
     private function executeSQL($sql)
-    {
+    {        
         //  Since we're now closing it, we need to always re-open it ... boo.
         $this->mysqli = new mysqli($this->configs["host"], $this->configs["dbUsername"], $this->configs["dbPassword"], "storyBank");                    
         $results = $this->mysqli->query($sql);

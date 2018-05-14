@@ -50,6 +50,10 @@ function Administer()
 {    
     switch ($_GET["method"])
     {
+        case ("update"):
+            
+            
+            break;
         case ("login"):
             $login = new Logins();                    
             return $login->Authenticate($_GET["email"], $_GET["password"]);
@@ -76,6 +80,40 @@ function Administer()
     return;
 }
 
+function Tags()
+{
+     switch ($_GET["method"])
+    {
+        case ("fetch"):
+            $mySage = new DaSafe();
+            echo json_encode($mySafe->fetchTags());            
+            break;
+        case ("login"):
+            $login = new Logins();                    
+            return $login->Authenticate($_GET["email"], $_GET["password"]);
+        case ("relogin"):
+            $login = new Logins();          
+            return $login->ReAuthenticate($_GET["token"]);
+        case ("newStories"):
+            $mySafe = new DaSafe();            
+            echo json_encode($mySafe->fetchNewStories($_GET["token"]));
+            break;
+        case ("flaggedStories"):
+            $mySafe = new DaSafe();            
+            echo json_encode($mySafe->fetchFlaggedStories($_GET["token"]));            
+            break;
+        case ("members"):
+            $mySafe = new DaSafe();            
+            echo json_encode($mySafe->fetchMembers($_GET["token"]));                        
+            break;
+        default:
+            echo 'Administration Attempted';
+            break;       
+    }
+    
+    return;   
+}
+
 //  This switch effectively maps to the API calls ... 
 switch($_GET["action"])
 {
@@ -88,6 +126,9 @@ switch($_GET["action"])
     case ("administer"):
         Administer();
         break;     
+    case ("tags"):
+        Tags();
+        break;
     default: 
         echo "Bad API Call";
         break;
