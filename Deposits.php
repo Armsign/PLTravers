@@ -17,4 +17,17 @@ class Deposits
     public $auidioLength = 0;
     public $tags = array();
     
+    //  Originally intended for audio, huh. Well.
+    public function CreateStory()
+    {
+        
+        return 'Unavailable';
+    }
+    
+    public function ConfirmConditions()
+    {
+        
+        return 'Unavailable';        
+    }
+        
 }

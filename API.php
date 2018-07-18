@@ -13,12 +13,43 @@ require_once("DaSafe.php");
 
 function Deposit()
 {
-    echo 'Deposit Attempted';
+    $deposits = new Deposits();
+    
+    /*
+     *  I could throwback an error on deposit ... nah, I prefer an explicit approach.
+     * 
+     *  First thing, check for the email user for logins 
+     * 
+     * 
+     */
+    
+    switch ($_GET["method"])
+    {
+        case ("create"):
+            $mySafe = new DaSafe();
+            echo json_encode($mySafe->fetchTags());            
+            break;
+        case ("login"):   
+            
+            break;
+        default: 
+            echo "Deposit Operation Attempted";
+            return;
+    }
+    
+    //  $_GET["method"]
+    
+    //  Need to confirm the deposit qualifications ...
+    
+    echo 'Deposit Operation Attempted';
     return;
 }
 
 function Withdraw()
 {
+    
+
+    
     /*
     //  Instanciate and call
     $mySafe = new DaSafe($configs);
@@ -82,10 +113,10 @@ function Administer()
 
 function Tags()
 {
-     switch ($_GET["method"])
+    switch ($_GET["method"])
     {
         case ("fetch"):
-            $mySage = new DaSafe();
+            $mySafe = new DaSafe();
             echo json_encode($mySafe->fetchTags());            
             break;
         case ("login"):
