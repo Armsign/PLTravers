@@ -18,16 +18,36 @@ class Deposits
     public $tags = array();
     
     //  Originally intended for audio, huh. Well.
-    public function CreateStory()
+    public function CreateStory($email, $nomDePlume, $story, $hasConsent = 0, $useEmail = 0)
     {
+        $returnValue = '';
         
-        return 'Unavailable';
+        if (strlen($email) > 0 && strlen($nomDePlume) > 0 && strlen($story) > 0)
+        {
+            $mySafe = new DaSafe();
+        
+            $returnValue = json_encode($mySafe->depositStory($email, $nomDePlume, $story, $hasConsent, $useEmail));            
+        }
+        
+        return $returnValue;
     }
     
-    public function ConfirmConditions()
-    {
+    public function ConfirmConditions($email)
+    { 
+        $mySafe = new DaSafe();
         
-        return 'Unavailable';        
+        $returnValue = json_encode($mySafe->fetchStoryCount($email));            
+        
+        return $returnValue;      
+    }
+    
+    public function FetchNomDePlume($email)
+    {
+        $mySafe = new DaSafe();
+        
+        $returnValue = json_encode($mySafe->fetchStoryNomDePlume($email));            
+        
+        return $returnValue;      
     }
         
 }

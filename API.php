@@ -15,33 +15,37 @@ function Deposit()
 {
     $deposits = new Deposits();
     
-    /*
-     *  I could throwback an error on deposit ... nah, I prefer an explicit approach.
-     * 
-     *  First thing, check for the email user for logins 
-     * 
-     * 
-     */
+    $email = trim($_GET["email"]);
+
     
-    switch ($_GET["method"])
+    if (strlen($email) > 0)
     {
-        case ("create"):
-            $mySafe = new DaSafe();
-            echo json_encode($mySafe->fetchTags());            
-            break;
-        case ("login"):   
-            
-            break;
-        default: 
-            echo "Deposit Operation Attempted";
-            return;
+        switch ($_GET["method"])
+        {
+            case ("create"):
+                $nomDePlume = trim($_GET["nomDePlume"]);
+                $story = trim($_GET["story"]);
+                $hasConsent = trim($_GET["hasConsent"]);
+                $useEmail = trim($_GET["useEmail"]);                
+                echo $deposits->CreateStory($email, $nomDePlume, $story, $hasConsent, $useEmail);
+                return;            
+            case ("nomdeplume"):
+                echo $deposits->FetchNomDePlume($email);      
+                return;
+            case ("history"):
+                echo $deposits->ConfirmConditions($email);      
+                return;
+            case ("instanciate"):   
+                echo $deposits->ConfirmConditions($email);
+                return;
+            default: 
+                echo "Deposit Operation Attempted";
+                return;
+        }
     }
     
-    //  $_GET["method"]
-    
     //  Need to confirm the deposit qualifications ...
-    
-    echo 'Deposit Operation Attempted';
+    echo 'Deposit Operation Attempted, no matching method';
     return;
 }
 
@@ -82,8 +86,6 @@ function Administer()
     switch ($_GET["method"])
     {
         case ("update"):
-            
-            
             break;
         case ("login"):
             $login = new Logins();                    

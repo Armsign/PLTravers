@@ -22,6 +22,29 @@ class DaSafe
      *      Let's start pulling the relevant data
      */
     
+    public function fetchStoryNomDePlume($email)
+    {
+        return $this->executeSQL("SELECT STORED_AS AS NOMDEPLUME FROM DEPOSITS WHERE STORED_BY = '"  . $email . "' ORDER BY STORED_ON DESC LIMIT 1");        
+    }            
+    
+    public function depositStory($email, $nomDePlume, $story, $hasConsent, $useEmail)
+    {
+        $sql = "INSERT INTO DEPOSITS ( "
+                . "TITLE, STORED_BY, STORED_AS, STORED_AT, "
+                . "STORED_ON, AUDIO_TYPE, AUDIO_LENGTH, IS_PLAYABLE, "
+                . "IS_TRANSCRIBED, TRANSCRIPTION, HAS_CONSENT, USE_EMAIL "
+                . ") VALUES ("
+                . "'No Title Supplied', '" . $email . "', '" . $nomDePlume . "', '', "
+                . "NOW(), '', 0, 0, "
+                . "1, '" . $story . "', " . $hasConsent . ", " . $useEmail . ");";
+        
+        return $this->transactionalSQL($sql);                
+    }       
+
+    /*
+     *      Admin stuff
+     */
+    
     public function fetchMembers($token)
     {
         //  Need to check if this is a user
@@ -100,11 +123,12 @@ class DaSafe
     
     /*
      *      Lowest level code
+     *          'dbDatabase' => 'StoryVault',
      */
     
     public function escapeString($stringToEscape)
     {
-        $this->mysqli = new mysqli($this->configs["host"], $this->configs["dbUsername"], $this->configs["dbPassword"], "storyBank");                    
+        $this->mysqli = new mysqli($this->configs["host"], $this->configs["dbUsername"], $this->configs["dbPassword"], $this->configs["dbDatabase"]);                    
         
         $returnString = mysqli_escape_string($this->mysqli, $stringToEscape);
         
@@ -116,33 +140,60 @@ class DaSafe
     private function updateSQL($sql)
     {
         //  Since we're now closing it, we need to always re-open it ... boo.
-        $this->mysqli = new mysqli($this->configs["host"], $this->configs["dbUsername"], $this->configs["dbPassword"], "storyBank");                    
+        $this->mysqli = new mysqli($this->configs["host"], $this->configs["dbUsername"], $this->configs["dbPassword"], $this->configs["dbDatabase"]);
         $this->mysqli->query($sql);
         $this->mysqli->close();
         
         //  And hand back a nice little array       
         return;                
     }
+
+    private function transactionalSQL($sql)
+    {
+  //  Since we're now closing it, we need to always re-open it ... boo.
+        $this->mysqli = new mysqli($this->configs["host"], $this->configs["dbUsername"], $this->configs["dbPassword"], $this->configs["dbDatabase"]);
+        
+        if ($this->mysqli->connect_errno > 0)
+        {
+            //  Exit early, failure to connect.
+            return null;
+            
+        } else {        
+            $this->mysqli->query($sql);            
+        }
+        
+        $this->mysqli->close();
+        
+        //  And hand back a nice little array       
+        return true;           
+    }
     
     private function executeSQL($sql)
     {        
         //  Since we're now closing it, we need to always re-open it ... boo.
-        $this->mysqli = new mysqli($this->configs["host"], $this->configs["dbUsername"], $this->configs["dbPassword"], "storyBank");                    
-        $results = $this->mysqli->query($sql);
-
+        $this->mysqli = new mysqli($this->configs["host"], $this->configs["dbUsername"], $this->configs["dbPassword"], $this->configs["dbDatabase"]);
+        
+        if ($this->mysqli->connect_errno > 0)
+        {
+            //  Exit early, failure to connect.
+            return null;
+            
+        } else {        
+            $results = $this->mysqli->query($sql);            
+        }
+        
+        $rows = array();
+        
         //  Now to format this correctly
         if ($results)
         {
-        
-            $rows = array();
             while($row = $results->fetch_array())
             {
                 $rows[] = $row;
             }
 
             //  Tidy everything up since we're stateless now ... boo.
-            $results->close();
-        
+            $results->close();        
         }
         
         $this->mysqli->close();
