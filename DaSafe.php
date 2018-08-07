@@ -107,7 +107,7 @@ class DaSafe
 
     public function fetchLogin($email)
     {
-        return $this->executeSQL("SELECT ID, EMAIL, IS_ACTIVE, PREFERRED_NAME, PASSWORD, SESSION FROM LOGINS WHERE EMAIL = '"  . $email . "' AND IS_ACTIVE = 1");
+        return $this->executeSQL("SELECT ID, EMAIL, IS_ACTIVE, IS_PERMISSABLE, PREFERRED_NAME, PASSWORD, SESSION FROM LOGINS WHERE EMAIL = '"  . $email . "' AND IS_ACTIVE = 1");
     }    
     
     public function fetchToken($token)
@@ -123,14 +123,24 @@ class DaSafe
     
     /*
      *      Lowest level code
-     *          'dbDatabase' => 'StoryVault',
      */
     
     public function escapeString($stringToEscape)
     {
-        $this->mysqli = new mysqli($this->configs["host"], $this->configs["dbUsername"], $this->configs["dbPassword"], $this->configs["dbDatabase"]);                    
+        $returnString = '';
         
-        $returnString = mysqli_escape_string($this->mysqli, $stringToEscape);
+        $this->mysqli = new mysqli($this->configs["host"], $this->configs["dbUsername"], $this->configs["dbPassword"], $this->configs["dbDatabase"], $this->configs["port"]);                    
+        
+        if ($this->mysqli->errno > 0)
+        {
+
+            return "SQL String Escape Error";
+            
+        } else {
+            
+            $returnString = mysqli_escape_string($this->mysqli, $stringToEscape);                
+            
+        }
         
         $this->mysqli->close();
         
@@ -140,7 +150,7 @@ class DaSafe
     private function updateSQL($sql)
     {
         //  Since we're now closing it, we need to always re-open it ... boo.
-        $this->mysqli = new mysqli($this->configs["host"], $this->configs["dbUsername"], $this->configs["dbPassword"], $this->configs["dbDatabase"]);
+        $this->mysqli = new mysqli($this->configs["host"], $this->configs["dbUsername"], $this->configs["dbPassword"], $this->configs["dbDatabase"], $this->configs["port"]);
         $this->mysqli->query($sql);
         $this->mysqli->close();
         
@@ -151,15 +161,22 @@ class DaSafe
     private function transactionalSQL($sql)
     {
   //  Since we're now closing it, we need to always re-open it ... boo.
-        $this->mysqli = new mysqli($this->configs["host"], $this->configs["dbUsername"], $this->configs["dbPassword"], $this->configs["dbDatabase"]);
+        $this->mysqli = new mysqli($this->configs["host"], $this->configs["dbUsername"], $this->configs["dbPassword"], $this->configs["dbDatabase"], $this->configs["port"]);
         
         if ($this->mysqli->connect_errno > 0)
         {
             //  Exit early, failure to connect.
-            return null;
+            echo $this->configs["host"] . ' - ' . $this->configs["dbUsername"] . ' - ' . $this->configs["dbPassword"] . ' - ' . $this->configs["dbDatabase"] . ' - ' . $this->configs["port"];
+            
+            return "Error: " . $this->mysqli->connect_errno;
             
         } else {        
-            $this->mysqli->query($sql);            
+            
+            echo "QueryBegun";
+            
+            $this->mysqli->query($sql);
+
+            echo "QueryExecuted";
         }
         
         $this->mysqli->close();
@@ -171,12 +188,13 @@ class DaSafe
     private function executeSQL($sql)
     {        
         //  Since we're now closing it, we need to always re-open it ... boo.
-        $this->mysqli = new mysqli($this->configs["host"], $this->configs["dbUsername"], $this->configs["dbPassword"], $this->configs["dbDatabase"]);
+        $this->mysqli = new mysqli($this->configs["host"], $this->configs["dbUsername"], $this->configs["dbPassword"], $this->configs["dbDatabase"], $this->configs["port"]);
         
         if ($this->mysqli->connect_errno > 0)
         {
+            
             //  Exit early, failure to connect.
-            return null;
+            return "Error: " . $this->mysqli->connect_errno;
             
         } else {        
             $results = $this->mysqli->query($sql);            

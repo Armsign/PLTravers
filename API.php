@@ -16,7 +16,6 @@ function Deposit()
     $deposits = new Deposits();
     
     $email = trim($_GET["email"]);
-
     
     if (strlen($email) > 0)
     {
@@ -27,6 +26,7 @@ function Deposit()
                 $story = trim($_GET["story"]);
                 $hasConsent = trim($_GET["hasConsent"]);
                 $useEmail = trim($_GET["useEmail"]);                
+                
                 echo $deposits->CreateStory($email, $nomDePlume, $story, $hasConsent, $useEmail);
                 return;            
             case ("nomdeplume"):

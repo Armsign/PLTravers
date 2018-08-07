@@ -25,7 +25,6 @@ class Deposits
         if (strlen($email) > 0 && strlen($nomDePlume) > 0 && strlen($story) > 0)
         {
             $mySafe = new DaSafe();
-        
             $returnValue = json_encode($mySafe->depositStory($email, $nomDePlume, $story, $hasConsent, $useEmail));            
         }
         

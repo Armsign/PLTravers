@@ -2,8 +2,8 @@
 
 //  Add a new entry for each part of the configuration. Make the file invisible to everyone else.
 return array(
-    'host' => 'localhost',
-    'port' => '3306',    
+    'host' => 'armsign-core',
+    'port' => '3307',    
     'fsHost' => 'Files',
     'dbDatabase' => 'StoryVault',
     'dbUsername' => 'vaultAdmin',

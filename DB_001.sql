@@ -9,10 +9,17 @@ CREATE TABLE LOGINS (
     IS_PERMISSABLE int(11) NOT NULL DEFAULT 0,
     PREFERRED_NAME varchar(1024) NOT NULL,
     PASSWORD varchar(1024) NOT NULL,
+    SESSION varchar(254) NOT NULL,
     PRIMARY KEY (ID),
-    KEY IDX_EMAIL (EMAIL)
+    KEY IDX_EMAIL (EMAIL),
+    KEY IDX_SESSION (SESSION)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--  What password encoder did I use?
  
+INSERT INTO LOGINS (EMAIL, IS_ACTIVE, IS_PERMISSABLE, PREFERRED_NAME, PASSWORD, SESSION) 
+VALUES ( 'paul@armsign.com.au', 1, 1, 'Paul Dunn', 'f450ca5fcb9b2333b38dd230ddae0b300', '');
+
 --
 -- Table structure for table DEPOSITS
 --

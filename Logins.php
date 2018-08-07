@@ -24,14 +24,14 @@ class Logins
         
             //  Santize that stuff!
             $saneEmail = $mySafe->escapeString($email);
-            $sanePassword = hash('md5', $password);        
+            $sanePassword = hash('md5', $password);  
             
             $results = $mySafe->fetchLogin($saneEmail);
             
             foreach ($results as $key => $value)
             {                
-                if ($value['PASSWORD'] == $sanePassword && $value['IS_ACTIVE'] == 1)
-                {
+                if ($value['PASSWORD'] === $sanePassword)
+                {                   
                     //  OK ... let's just swap out the password and swap in the session token ....
                     $value['PASSWORD'] = 'OBFUSCATED';
                     $value['SESSION'] = hash('sha256', $saneEmail . $sanePassword);        
@@ -42,7 +42,8 @@ class Logins
                     //  Return all the goods!
                     echo json_encode($value);
                     return;
-                }
+                } 
+                        
             }                        
         }
                         
