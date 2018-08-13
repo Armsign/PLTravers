@@ -83,9 +83,28 @@ function Withdraw()
 
 function Administer()
 {    
+
     switch ($_GET["method"])
     {
+        case ("delete"):
+            $mySafe = new DaSafe();
+
+            $token = trim($_GET["token"]);              
+            $id = trim($_GET["id"]);              
+            
+            echo json_encode($mySafe->deleteStory($token, $id));
+            break;
         case ("update"):
+            $mySafe = new DaSafe();
+
+            $token = trim($_GET["token"]);              
+            $id = trim($_GET["id"]);              
+            $nomDePlume = trim($_GET["nomDePlume"]);            
+            $isPlayable = trim($_GET["isPlayable"]);
+            $title = trim($_GET["title"]);
+            $story = trim($_GET["story"]);
+            
+            echo json_encode($mySafe->updateStory($token, $id, $nomDePlume, $isPlayable, $title, $story));
             break;
         case ("login"):
             $login = new Logins();                    
@@ -101,7 +120,41 @@ function Administer()
             $mySafe = new DaSafe();            
             echo json_encode($mySafe->fetchFlaggedStories($_GET["token"]));            
             break;
-        case ("members"):
+        default:
+            echo 'Administration Attempted';
+            break;       
+    }
+    
+    return;
+}
+
+function Members()
+{    
+
+    switch ($_GET["method"])
+    {
+        case ("password"):
+            $mySafe = new DaSafe();
+
+            $token = trim($_GET["token"]);              
+            $id = trim($_GET["id"]);              
+            $password = trim($_GET["password"]);   
+            
+            echo json_encode($mySafe->updatePassword($token, $id, $password));
+            break;
+        case ("update"):
+            $mySafe = new DaSafe();
+
+            $token = trim($_GET["token"]);              
+            $id = trim($_GET["id"]);              
+            $nomDePlume = trim($_GET["nomDePlume"]);            
+            $isPlayable = trim($_GET["isPlayable"]);
+            $title = trim($_GET["title"]);
+            $story = trim($_GET["story"]);
+            
+            echo json_encode($mySafe->updateStory($token, $id, $nomDePlume, $isPlayable, $title, $story));
+            break;        
+        case ("fetch"):
             $mySafe = new DaSafe();            
             echo json_encode($mySafe->fetchMembers($_GET["token"]));                        
             break;
@@ -117,30 +170,30 @@ function Tags()
 {
     switch ($_GET["method"])
     {
+        case ("delete"):
+            $mySafe = new DaSafe();
+
+            $token = trim($_GET["token"]);              
+            $id = trim($_GET["id"]);              
+            
+            echo json_encode($mySafe->deleteTags($token, $id));
+            break;
+        case ("update"):
+            $mySafe = new DaSafe();
+
+            $token = trim($_GET["token"]);              
+            $id = trim($_GET["id"]);              
+            $title = trim($_GET["title"]);
+            $description = trim($_GET["description"]);
+            
+            echo json_encode($mySafe->updateTags($token, $id, $title, $description));
+            break;        
         case ("fetch"):
             $mySafe = new DaSafe();
             echo json_encode($mySafe->fetchTags());            
-            break;
-        case ("login"):
-            $login = new Logins();                    
-            return $login->Authenticate($_GET["email"], $_GET["password"]);
-        case ("relogin"):
-            $login = new Logins();          
-            return $login->ReAuthenticate($_GET["token"]);
-        case ("newStories"):
-            $mySafe = new DaSafe();            
-            echo json_encode($mySafe->fetchNewStories($_GET["token"]));
-            break;
-        case ("flaggedStories"):
-            $mySafe = new DaSafe();            
-            echo json_encode($mySafe->fetchFlaggedStories($_GET["token"]));            
-            break;
-        case ("members"):
-            $mySafe = new DaSafe();            
-            echo json_encode($mySafe->fetchMembers($_GET["token"]));                        
-            break;
+            break;        
         default:
-            echo 'Administration Attempted';
+            echo 'Tags Attempted';
             break;       
     }
     
@@ -158,6 +211,9 @@ switch($_GET["action"])
         break;    
     case ("administer"):
         Administer();
+        break;     
+    case ("members"):
+        Members();
         break;     
     case ("tags"):
         Tags();

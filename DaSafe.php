@@ -45,6 +45,105 @@ class DaSafe
      *      Admin stuff
      */
     
+    public function updateStory($token, $id, $nomDePlume, $isPlayable, $title, $story)
+    {
+        //  Validate the token to get the user id
+        $logins = $this->fetchToken($token);
+        
+        $returnArray = array();
+        
+        if (sizeof($logins) == 1)
+        {            
+            //  We also need the login ...
+            $sql = "UPDATE DEPOSITS SET "
+                . "STORED_AS = '" . $nomDePlume . "', " 
+                . "TITLE = '" . $title . "', " 
+                . "IS_PLAYABLE = " . $isPlayable . ", "
+                . "REVIEWED_BY = " . $logins[0]["ID"] . ", "  
+                . "REVIEWED_ON = NOW(), "                    
+                . "TRANSCRIPTION = '" . $story . "' "
+                . "WHERE ID = " . $id . ";";
+            
+            $returnArray = $this->transactionalSQL($sql);                                        
+        }        
+
+        return $returnArray;
+    }        
+    
+    public function deleteStory($token, $id)
+    {
+        //  Validate the token to get the user id
+        $logins = $this->fetchToken($token);
+        
+        $returnArray = array();
+        
+        if (sizeof($logins) == 1)
+        {            
+            //  We also need the login ...
+            $sql = "DELETE FROM DEPOSITS WHERE ID = " . $id . ";";
+            
+            $returnArray = $this->transactionalSQL($sql);                                        
+            
+            $sql = "DELETE FROM DEPOSIT_TAGS WHERE DEPOSIT = " . $id . ";";
+            
+            $returnArray = $this->transactionalSQL($sql);                                                    
+        }        
+
+        return $returnArray;
+    }  
+    
+    public function updateTags($token, $id, $title, $description)
+    {
+        //  Validate the token to get the user id
+        $logins = $this->fetchToken($token);
+        
+        $returnArray = array();
+        
+        if (sizeof($logins) == 1)
+        {            
+            if ($id > 0)
+            {
+                
+                $sql = "UPDATE TAGS SET "
+                    . "TITLE = '" . $title . "', "                 
+                    . "DESCRIPTION = '" . $description . "' "
+                    . "WHERE ID = " . $id . ";";
+                
+            } else {
+
+                $sql = "INSERT INTO TAGS ( TITLE, DESCRIPTION ) "
+                        . "VALUES ('" . $title . "', '" . $description . "')";
+                
+            }
+            
+            $returnArray = $this->transactionalSQL($sql);                                        
+        }        
+
+        return $returnArray;
+    }      
+    
+    public function deleteTags($token, $id)
+    {
+        //  Validate the token to get the user id
+        $logins = $this->fetchToken($token);
+        
+        $returnArray = array();
+        
+        if (sizeof($logins) == 1)
+        {            
+            
+            $sql = "DELETE FROM TAGS WHERE ID = " . $id . ";";            
+            $returnArray = $this->transactionalSQL($sql);                                        
+           
+            //  We also need the login ...
+            $sql = "DELETE FROM DEPOSIT_TAGS WHERE TAG = " . $id . ";";
+            $returnArray = $this->transactionalSQL($sql);                                        
+            
+        }        
+
+        return $returnArray;
+    }     
+    
     public function fetchMembers($token)
     {
         //  Need to check if this is a user
@@ -53,10 +152,31 @@ class DaSafe
         $returnArray = array();
         
         if (sizeof($logins) == 1)
-        {
-            $returnArray = $this->executeSQL("SELECT ID, EMAIL, IS_ACTIVE, PREFERRED_NAME, SESSION FROM LOGINS ORDER BY EMAIL ASC");                                        
+        {            
+            $returnArray = $this->executeSQL("SELECT ID, EMAIL, IS_ACTIVE, PREFERRED_NAME, SESSION, PASSWORD FROM LOGINS ORDER BY EMAIL ASC");                                        
         }
         
+        return $returnArray;        
+    }
+    
+    public function updatePassword($token, $id, $password)    
+    {
+        //  Validate the token to get the user id
+        $logins = $this->fetchToken($token);
+        
+        $returnArray = array();
+        
+        if (sizeof($logins) == 1)
+        {            
+            $sanePassword = hash('md5', $password);  
+            
+            $sql = "UPDATE LOGINS SET "
+                . "PASSWORD = '" . $sanePassword . "' "
+                . "WHERE ID = " . $id . ";";               
+            
+            $returnArray = $this->transactionalSQL($sql);                                        
+        }        
+
         return $returnArray;        
     }
     
@@ -68,10 +188,10 @@ class DaSafe
         $returnArray = array();
         
         if (sizeof($logins) == 1)
-        {
-            $returnArray = $this->executeSQL("SELECT ID, TITLE, STORED_BY, STORED_ON, AUDIO_TYPE, AUDIO_LENGTH, TRANSCRIPTION, RECEIVED_BY, RECEIVED_ON FROM DEPOSITS WHERE RECEIVED_BY = 0 ORDER BY STORED_ON DESC");                                        
+        {            
+            $returnArray = $this->executeSQL("SELECT ID, TITLE, STORED_BY, STORED_AS, STORED_AT, STORED_ON, AUDIO_TYPE, AUDIO_LENGTH, IS_PLAYABLE, IS_TRANSCRIBED, TRANSCRIPTION, HAS_CONSENT, USE_EMAIL, REVIEWED_BY, REVIEWED_ON FROM DEPOSITS WHERE REVIEWED_BY = 0 ORDER BY STORED_ON DESC");                                        
         }
-        
+
         return $returnArray;
     }
     
@@ -83,7 +203,7 @@ class DaSafe
         $returnArray = array();
         
         if (sizeof($logins) == 1)
-        {
+        {           
             $returnArray = $this->executeSQL(
                     "SELECT D.ID, D.TITLE, D.STORED_BY, D.STORED_ON, D.AUDIO_TYPE, D.AUDIO_LENGTH, D.TRANSCRIPTION, D.RECEIVED_BY, D.RECEIVED_ON "
                     . "FROM DEPOSIT_FLAGS DF, DEPOSITS D "
@@ -107,7 +227,7 @@ class DaSafe
 
     public function fetchLogin($email)
     {
-        return $this->executeSQL("SELECT ID, EMAIL, IS_ACTIVE, IS_PERMISSABLE, PREFERRED_NAME, PASSWORD, SESSION FROM LOGINS WHERE EMAIL = '"  . $email . "' AND IS_ACTIVE = 1");
+        return $this->executeSQL("SELECT ID, EMAIL, IS_ACTIVE, PREFERRED_NAME, PASSWORD, SESSION FROM LOGINS WHERE EMAIL = '"  . $email . "' AND IS_ACTIVE = 1");
     }    
     
     public function fetchToken($token)
@@ -160,23 +280,18 @@ class DaSafe
 
     private function transactionalSQL($sql)
     {
-  //  Since we're now closing it, we need to always re-open it ... boo.
+        //  Since we're now closing it, we need to always re-open it ... boo.
         $this->mysqli = new mysqli($this->configs["host"], $this->configs["dbUsername"], $this->configs["dbPassword"], $this->configs["dbDatabase"], $this->configs["port"]);
         
         if ($this->mysqli->connect_errno > 0)
         {
             //  Exit early, failure to connect.
-            echo $this->configs["host"] . ' - ' . $this->configs["dbUsername"] . ' - ' . $this->configs["dbPassword"] . ' - ' . $this->configs["dbDatabase"] . ' - ' . $this->configs["port"];
-            
             return "Error: " . $this->mysqli->connect_errno;
             
         } else {        
             
-            echo "QueryBegun";
-            
             $this->mysqli->query($sql);
 
-            echo "QueryExecuted";
         }
         
         $this->mysqli->close();
@@ -205,7 +320,7 @@ class DaSafe
         //  Now to format this correctly
         if ($results)
         {
-            while($row = $results->fetch_array())
+            while($row = $results->fetch_array(MYSQLI_ASSOC))
             {
                 $rows[] = $row;
             }
