@@ -18,6 +18,8 @@ class Logins
     
     public function Authenticate($email, $password)
     {
+        $returnValue = '';
+        
         if (strlen($email) > 0)
         {    
             $mySafe = new DaSafe();
@@ -41,19 +43,21 @@ class Logins
                     $mySafe->updateToken($value['EMAIL'], $value['SESSION']);
                     
                     //  Return all the goods!
-                    echo json_encode($value);
-                    return;
+                    $returnValue = json_encode($value);
                 } 
                         
-            }                        
+            }   
+            
+            unset($mySafe);
         }
                         
-        echo 0;
-        return;
+        return $returnValue;
     }
     
     public function ReAuthenticate($token)
     {
+        $returnValue = '';        
+        
         if (strlen($token) > 0)
         {    
             $mySafe = new DaSafe();
@@ -64,15 +68,28 @@ class Logins
             {                
                 $value['PASSWORD'] = 'OBFUSCATED';
                 //  Return all the goods!
-                echo json_encode($value);
-                return;
-            }                        
-        }
+                $returnValue = json_encode($value);
+            } 
+            
+            unset($mySafe);
+        }        
                         
-        echo 0;
-        return;
+        return $returnValue;
     }    
     
-    
+    public function fetchMembers($token)
+    {
+        $returnValue = '';
+        
+        $daSafe = new DaSafe();       
+        if ($daSafe->IsValidToken())
+        {
+            $returnValue = json_encode($daSafe->fetchMembers());
+        }
+        
+        unset($daSafe);        
+     
+        return $returnValue;
+    }    
     
 }
