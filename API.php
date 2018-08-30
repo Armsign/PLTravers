@@ -10,22 +10,19 @@ require_once("Logins.php");
 require_once("Tags.php"); 
 require_once("Deposits.php"); 
 
+function Withdraw()
+{    
+    echo 'Withdrawal Attempted';
+    return;
+}
+
 function Deposit()
 {
-    
-    //    action=depost
-    //    &method=update
-    //    &token=c4fbb242c5ba845c3271e660fefe45d8072814c412d044e52cb530a6fe7e65a1
-    //    &id=0
-    //    &nomDePlume=Anon
-    //    &isPlayable=0
-    //    &title=Title
-    //    &story=Story
-    
     $deposits = new Deposits();
 
     $token = trim($_GET["token"]);                  
-    $id = trim($_GET["id"]);                  
+    $id = trim($_GET["id"]);      
+    $promptId = trim($_GET["promptId"]);      
     $email = trim($_GET["email"]);
     $nomDePlume = trim($_GET["nomDePlume"]);                
     $title = trim($_GET["title"]);
@@ -34,55 +31,46 @@ function Deposit()
     $useEmail = trim($_GET["useEmail"]);        
     $isPlayable = trim($_GET["isPlayable"]);
         
+/*    
+    http://192.168.1.2/Vault/API.php?action=deposit&method=update&
+    token=c4fbb242c5ba845c3271e660fefe45d8072814c412d044e52cb530a6fe7e65a1&
+    id=0&
+    promptId=0&
+    nomDePlume=Anon&
+    isPlayable=0&
+    title=%20Title%202&
+    email=anon@storybank.com.au&
+    hasConsent=0&
+    useEmail=0&
+    story=Story%202    
+*/    
+    
     switch ($_GET["method"])
     { 
-        
-        case ("update"):
-            echo $deposits->updateStory($token, $id, $nomDePlume, $isPlayable, $title, $story);
+        //  Admin functions
+        case ("update"):            
+            echo $deposits->updateStory($token, $id, $promptId, $email, $nomDePlume, $title, $story, $hasConsent, $useEmail, $isPlayable);
             break;        
         case ("delete"):
             echo $deposits->deleteStory($token, $id);
-            break;        
-        case ("consent"):
-            echo $deposits->hasConsent($email);
-            break;        
-
-        case ("create"):
-            echo $deposits->createStory($email, $nomDePlume, $story, $hasConsent, $useEmail);
-            break;        
-        case ("nomdeplume"):
-            echo $deposits->fetchNomDePlume($email);
             break;        
         case ("newStories"):
             echo $deposits->fetchNewStories($_GET["token"]);
             break;
         case ("flaggedStories"):
             echo $deposits->fetchFlaggedStories($_GET["token"]);            
-            break;          
-
+            break;           
         
-        /*
-       
-        case ("delete"):
-            $mySafe = new DaSafe();
-
-            $token = trim($_GET["token"]);              
-            $id = trim($_GET["id"]);              
-
-            echo json_encode($deposits->deleteStory($token, $id));
-            break;                                
+        //  Kiosk functions
+        case ("create"):
+            echo $deposits->createStory($promptId, $email, $nomDePlume, $story, $hasConsent, $useEmail);
+            break;        
         case ("nomdeplume"):
-            echo $deposits->FetchNomDePlume($email);      
-            break;
-        case ("history"):
-            echo $deposits->ConfirmConditions($email);      
-            break;
-        case ("instanciate"):   
-            echo $deposits->ConfirmConditions($email);
-            break;
-
-               
-            */
+            echo $deposits->fetchNomDePlume($email);
+            break;        
+        case ("consent"):
+            echo $deposits->hasConsent($email);
+            break;        
         
         default: 
             echo "Deposit Operation Attempted";
@@ -94,11 +82,7 @@ function Deposit()
     return;
 }
 
-function Withdraw()
-{    
-    echo 'Withdrawal Attempted';
-    return;
-}
+
 
 function Administer()
 {    
@@ -128,16 +112,18 @@ function Members()
     switch ($_GET["method"])
     {
         case ("password"):
-            $mySafe = new DaSafe();
+            $logins = new Logins();
 
             $token = trim($_GET["token"]);              
             $id = trim($_GET["id"]);              
             $password = trim($_GET["password"]);   
             
-            echo json_encode($mySafe->updatePassword($token, $id, $password));
+            echo $logins->updatePassword($token, $id, $password);
+            
+            unset($logins);
             break;
         case ("update"):
-            $mySafe = new DaSafe();
+            $logins = new Logins();
 
             $token = trim($_GET["token"]);              
             $id = trim($_GET["id"]);              
@@ -145,11 +131,16 @@ function Members()
             $preferredName = trim($_GET["preferredName"]);
             $isActive = trim($_GET["isActive"]);                            
             
-            echo json_encode($mySafe->updateMember($token, $id, $email, $preferredName, $isActive));
-            break;        
+            echo $logins->updateMember($token, $id, $email, $preferredName, $isActive);
+            
+            unset($logins);
+            break;                
         case ("fetch"):
-            $mySafe = new DaSafe();            
-            echo json_encode($mySafe->fetchMembers($_GET["token"]));                        
+            $logins = new Logins();                        
+           
+            echo $logins->fetchMembers($_GET["token"]);                        
+            
+            unset($logins);
             break;
         default:
             echo 'Members Attempted';
@@ -161,6 +152,8 @@ function Members()
 
 function Tags()
 {
+    //  I'll need a valid token to proceed with anything ... not true, the storyteller will still need to know ;(            
+    
     switch ($_GET["method"])
     {
         case ("delete"):
@@ -170,6 +163,8 @@ function Tags()
             $id = trim($_GET["id"]);              
             
             echo json_encode($mySafe->deleteTags($token, $id));
+            
+            unset($mySafe);            
             break;
         case ("update"):
             $mySafe = new DaSafe();
@@ -180,10 +175,15 @@ function Tags()
             $description = trim($_GET["description"]);
             
             echo json_encode($mySafe->updateTags($token, $id, $title, $description));
+            
+            unset($mySafe);            
             break;        
         case ("fetch"):
             $mySafe = new DaSafe();
+            
             echo json_encode($mySafe->fetchTags());            
+            
+            unset($mySafe);
             break;        
         default:
             echo 'Tags Attempted';

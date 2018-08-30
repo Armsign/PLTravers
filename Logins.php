@@ -82,14 +82,44 @@ class Logins
         $returnValue = '';
         
         $daSafe = new DaSafe();       
-        if ($daSafe->IsValidToken())
+        if ($daSafe->IsValidToken($token))
         {
             $returnValue = json_encode($daSafe->fetchMembers());
-        }
-        
+        }        
         unset($daSafe);        
      
         return $returnValue;
+    }    
+    
+    public function updateMember($token, $id, $email, $preferredName, $isActive)
+    {
+        $returnValue = '';
+        
+        $daSafe = new DaSafe();       
+        if ($daSafe->IsValidToken($token) && strlen($email) > 0 && strlen($preferredName) > 0)
+        {
+            $returnValue = json_encode($daSafe->updateMember($id, $email, $preferredName, $isActive));
+        }        
+        unset($daSafe);              
+        
+        return $returnValue;
+    }
+    
+    public function updatePassword($token, $id, $password)    
+    {
+        //  Validate the token to get the user id        
+        $returnArray = array();
+        
+        $daSafe = new DaSafe();         
+        if ($daSafe->IsValidToken($token))
+        {            
+            $sanePassword = hash('md5', $password);  
+
+            $returnArray = json_encode($daSafe->updatePassword($token, $id, $password));
+        }                
+        unset($daSafe);
+
+        return $returnArray;        
     }    
     
 }
