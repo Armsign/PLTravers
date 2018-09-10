@@ -30,25 +30,12 @@ function Deposit()
     $hasConsent = trim($_GET["hasConsent"]);
     $useEmail = trim($_GET["useEmail"]);        
     $isPlayable = trim($_GET["isPlayable"]);
-        
-/*    
-    http://192.168.1.2/Vault/API.php?action=deposit&method=update&
-    token=c4fbb242c5ba845c3271e660fefe45d8072814c412d044e52cb530a6fe7e65a1&
-    id=0&
-    promptId=0&
-    nomDePlume=Anon&
-    isPlayable=0&
-    title=%20Title%202&
-    email=anon@storybank.com.au&
-    hasConsent=0&
-    useEmail=0&
-    story=Story%202    
-*/    
     
     switch ($_GET["method"])
     { 
         //  Admin functions
-        case ("update"):            
+        case ("update"):    
+                       
             echo $deposits->updateStory($token, $id, $promptId, $email, $nomDePlume, $title, $story, $hasConsent, $useEmail, $isPlayable);
             break;        
         case ("delete"):
@@ -57,6 +44,9 @@ function Deposit()
         case ("newStories"):
             echo $deposits->fetchNewStories($_GET["token"]);
             break;
+        case ("oldStories"):
+            echo $deposits->fetchOldStories($_GET["token"]);
+            break;        
         case ("flaggedStories"):
             echo $deposits->fetchFlaggedStories($_GET["token"]);            
             break;           

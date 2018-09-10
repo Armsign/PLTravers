@@ -55,7 +55,7 @@ CREATE TABLE DEPOSITS (
 DROP TABLE IF EXISTS DEPOSIT_FLAGS;
 CREATE TABLE DEPOSIT_FLAGS (
     ID bigint(20) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT,
-    DEPOSIT bigint(20) UNSIGNED ZEROFILL NOT NULL,
+    DEPOSIT bigint(20) UNSIGNED ZEROFILL NOT NULL, 
     FLAGGED_BY varchar(2048) NOT NULL,
     FLAGGED_ON datetime NOT NULL,
     REASON varchar(2048) DEFAULT NULL,
@@ -113,8 +113,6 @@ CREATE TABLE TAGS (
 INSERT INTO TAGS (ID, TITLE, DESCRIPTION) VALUES
 (1, 'PL Travers', 'This content mentions PL Travers directly');
 
-
-
 /*
 
 Once upon a time in a land far, far away, there lived a small family of ocelots.
@@ -136,5 +134,19 @@ Indeed, the youngest sister had counted on this, for she had come to the surpris
 She knew that she couldn't breathe underwater unless a mer-ocelot was with her and so she set about seducing one closer to the surface so she could catch him and swim back to their castle under in the mysterious depths.
 
 This audacious sister had prepared by creating a skirt out of lily pads, cleverly stitched into a tail so that they appeared as beautiful green scales.
+
+
+INSERT INTO DEPOSITS ( 
+    PROMPT_ID, TITLE, STORED_BY, STORED_AS, 
+    STORED_AT, STORED_ON, AUDIO_TYPE, AUDIO_LENGTH, 
+    IS_PLAYABLE, IS_TRANSCRIBED, TRANSCRIPTION, HAS_CONSENT, USE_EMAIL 
+) VALUES ( 0, 'Anon', 'anon@storybank.com.au', 'Anon', 'N\/A', NOW(), '', 0, 0, 1, 'bhyi', 0, 0);
+
+
+<blockquote cite="http://oemdynamics.com.au/">
+Thank you for anodising the cores. You guys did a great job. The fast turnaround time ensure our customers received their items in a timely manner. Thanks again, Glenn.
+</blockquote>
+
+/volume1/@appstore/MariaDB10/usr/local/mariadb10/bin/mysqldump -u root -pWipe0ut13 --opt --all-databases --flush-logs | gzip > mysqldumps.sql.gz
 
 */

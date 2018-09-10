@@ -21,27 +21,14 @@ class DaSafe
     /*
      *      Actual Story creation
      */
-    
-    public function depositStory($promptID, $email, $nomDePlume, $story, $hasConsent, $useEmail)
-    {
-        $sql = "INSERT INTO DEPOSITS ( "
-                . "PROMPT_ID, TITLE, STORED_BY, STORED_AS, STORED_AT, "
-                . "STORED_ON, AUDIO_TYPE, AUDIO_LENGTH, IS_PLAYABLE, "
-                . "IS_TRANSCRIBED, TRANSCRIPTION, HAS_CONSENT, USE_EMAIL "
-                . ") VALUES (" . $promptID . ", "
-                . "'No Title Supplied', '" . $email . "', '" . $nomDePlume . "', '', "
-                . "NOW(), '', 0, 0, "
-                . "1, '" . $story . "', " . $hasConsent . ", " . $useEmail . ");";
-        
-        return $this->transactionalSQL($sql);                
-    }       
 
-    public function updateStory($staffId, $id, $promptId, $email, $nomDePlume, $title, $story, $hasConsent, $useEmail, $isPlayable)
+    public function updateStory($staffId, $id, $promptId = 0, $email, $nomDePlume, $title, $story, $hasConsent, $useEmail = 0, $isPlayable = 0)
     {       
         //  Validate the token to get the user id
         //  Now I don't really like much of this at all
         if (strlen($nomDePlume) > 0 && strlen($story) > 0)
         {      
+            
             if ($id > 0)
             {            
                 
@@ -52,7 +39,7 @@ class DaSafe
                     . "STORED_BY = '" . $email . "', " 
                     . "STORED_AS = '" . $nomDePlume . "', " 
                     . "IS_PLAYABLE = " . $isPlayable . ", "
-                    . "REVIEWED_BY = " . $staffID . ", "                        
+                    . "REVIEWED_BY = " . $staffId . ", "                        
                     . "HAS_CONSENT = " . $hasConsent . ", "
                     . "USE_EMAIL = " . $useEmail . ", "                                                
                     . "REVIEWED_ON = NOW(), "     
@@ -73,7 +60,9 @@ class DaSafe
                 
             }
             
-            $returnArray = $this->transactionalSQL($sql);                                        
+            //  $returnArray = $sql;
+            
+            $returnArray = $this->transactionalSQL($sql);
         }        
 
         return $returnArray;
@@ -222,6 +211,13 @@ class DaSafe
 
         return $returnArray;
     }
+    
+    public function fetchOldStories()
+    {
+        $returnArray = $this->executeSQL("SELECT * FROM DEPOSITS WHERE REVIEWED_BY > 0 ORDER BY STORED_ON DESC LIMIT 100");                                        
+
+        return $returnArray;
+    }    
     
     public function fetchFlaggedStories()
     {
