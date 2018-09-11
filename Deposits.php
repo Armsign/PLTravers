@@ -80,6 +80,21 @@ class Deposits
         return $returnArray;
     }    
     
+    public function fetchDeadStories($token)
+    {
+        $returnArray = '';
+        
+        //  Need to check if this is a user
+        $daSafe = new DaSafe();       
+        if ($daSafe->IsValidToken($token))
+        {
+            $returnArray = json_encode($daSafe->fetchDeadStories());
+        }        
+        unset($daSafe);
+
+        return $returnArray;
+    }        
+    
     public function fetchFlaggedStories($token)
     {
         $returnArray = '';

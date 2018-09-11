@@ -24,45 +24,51 @@ class DaSafe
 
     public function updateStory($staffId, $id, $promptId = 0, $email, $nomDePlume, $title, $story, $hasConsent, $useEmail = 0, $isPlayable = 0)
     {       
+        $returnArray = true;
+        
         //  Validate the token to get the user id
         //  Now I don't really like much of this at all
         if (strlen($nomDePlume) > 0 && strlen($story) > 0)
         {      
             
-            if ($id > 0)
-            {            
+            $this->mysqli = new mysqli($this->configs["host"], $this->configs["dbUsername"], $this->configs["dbPassword"], $this->configs["dbDatabase"], $this->configs["port"]);
+
+            if ($this->mysqli->connect_errno > 0)
+            {
+                //  Exit early, failure to connect.
+                return "Error: " . $this->mysqli->connect_errno;
+
+            } else {              
                 
-                //  We also need the login ...
-                $sql = "UPDATE DEPOSITS SET "
-                    . "PROMPT_ID = " . $promptId . ", " 
-                    . "TITLE = '" . $title . "', " 
-                    . "STORED_BY = '" . $email . "', " 
-                    . "STORED_AS = '" . $nomDePlume . "', " 
-                    . "IS_PLAYABLE = " . $isPlayable . ", "
-                    . "REVIEWED_BY = " . $staffId . ", "                        
-                    . "HAS_CONSENT = " . $hasConsent . ", "
-                    . "USE_EMAIL = " . $useEmail . ", "                                                
-                    . "REVIEWED_ON = NOW(), "     
-                    . "TRANSCRIPTION = '" . $story . "' "
-                    . "WHERE ID = " . $id . ";";
-                
-            } else {
-                
-                //  Not really adequate ... does it require a 2-stage auth process
-                $sql = "INSERT INTO DEPOSITS ( PROMPT_ID, "
-                    . "TITLE, STORED_BY, STORED_AS, STORED_AT, "
-                    . "STORED_ON, AUDIO_TYPE, AUDIO_LENGTH, IS_PLAYABLE, "
-                    . "IS_TRANSCRIBED, TRANSCRIPTION, HAS_CONSENT, USE_EMAIL "
-                    . ") VALUES (" . $promptId . ", "
-                    . "'" . $title . "', '" . $email . "', '" . $nomDePlume . "', 'N/A', "
-                    . "NOW(), '', 0, " . $isPlayable . ", "
-                    . "1, '" . $story . "', " . $hasConsent . ", " . $useEmail . ");";                                
-                
+                if ($id > 0)
+                {            
+                    $sql = "UPDATE DEPOSITS SET PROMPT_ID = ?, TITLE = ?, STORED_BY = ?, STORED_AS = ?, "
+                            . "IS_PLAYABLE = ?, REVIEWED_BY = ?, HAS_CONSENT = ?, USE_EMAIL = ?, "                                                
+                            . "REVIEWED_ON = NOW(), TRANSCRIPTION = ? WHERE ID = ?;";
+                    
+                    $stmt = $this->mysqli->prepare($sql);                    
+                    $stmt->bind_param('isssiiiisi', $promptId, $title, $email, $nomDePlume, $isPlayable, $staffId, $hasConsent, $useEmail, $story, $id);
+
+                } else {
+                    
+                   $sql = "INSERT INTO DEPOSITS ( PROMPT_ID, "
+                        . "TITLE, STORED_BY, STORED_AS, STORED_AT, "
+                        . "STORED_ON, AUDIO_TYPE, AUDIO_LENGTH, IS_PLAYABLE, "
+                        . "IS_TRANSCRIBED, TRANSCRIPTION, HAS_CONSENT, USE_EMAIL "
+                        . ") VALUES (?, ?, ?, ?, 'N/A', NOW(), 'N/A', 0, ?, "
+                        . "1, ?, ?, ?);";                         
+                    
+                    $stmt = $this->mysqli->prepare($sql);
+                    $stmt->bind_param('isssisii', $promptId, $title, $email, $nomDePlume, $isPlayable, $story, $hasConsent, $useEmail);
+                    
+                }
+
+                /* execute prepared statement */
+                $stmt->execute();            
+                $stmt->close();            
             }
-            
-            //  $returnArray = $sql;
-            
-            $returnArray = $this->transactionalSQL($sql);
+
+            $this->mysqli->close();            
         }        
 
         return $returnArray;
@@ -214,10 +220,17 @@ class DaSafe
     
     public function fetchOldStories()
     {
-        $returnArray = $this->executeSQL("SELECT * FROM DEPOSITS WHERE REVIEWED_BY > 0 ORDER BY STORED_ON DESC LIMIT 100");                                        
+        $returnArray = $this->executeSQL("SELECT * FROM DEPOSITS WHERE IS_PLAYABLE = 1 AND REVIEWED_BY > 0 ORDER BY STORED_ON DESC LIMIT 100");                                        
 
         return $returnArray;
     }    
+    
+    public function fetchDeadStories()
+    {
+        $returnArray = $this->executeSQL("SELECT * FROM DEPOSITS WHERE IS_PLAYABLE = 0 AND REVIEWED_BY > 0 ORDER BY STORED_ON DESC LIMIT 100");                                        
+
+        return $returnArray;
+    }       
     
     public function fetchFlaggedStories()
     {

@@ -46,7 +46,10 @@ function Deposit()
             break;
         case ("oldStories"):
             echo $deposits->fetchOldStories($_GET["token"]);
-            break;        
+            break;               
+        case ("deadStories"):
+            echo $deposits->fetchDeadStories($_GET["token"]);
+            break;                 
         case ("flaggedStories"):
             echo $deposits->fetchFlaggedStories($_GET["token"]);            
             break;           
