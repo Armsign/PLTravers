@@ -24,7 +24,7 @@ class DaSafe
 
     public function updateStory($staffId, $id, $promptId = 0, $email, $nomDePlume, $title, $story, $hasConsent, $useEmail = 0, $isPlayable = 0)
     {       
-        $returnArray = true;
+        $returnArray = $id;
         
         //  Validate the token to get the user id
         //  Now I don't really like much of this at all
@@ -64,11 +64,17 @@ class DaSafe
                 }
 
                 /* execute prepared statement */
-                $stmt->execute();            
+                $stmt->execute();                            
                 $stmt->close();            
+                
+                $returnArray = mysqli_insert_id($this->mysqli);
             }
 
             $this->mysqli->close();            
+            
+            //  We should delete the tags, because they'll be arriving as soon as this is done, yes?
+            $sql = "DELETE FROM DEPOSIT_TAGS WHERE DEPOSIT = " . $id . ";";
+            $this->transactionalSQL($sql);   
         }        
 
         return $returnArray;
@@ -243,7 +249,19 @@ class DaSafe
                 . "ORDER BY D.STORED_ON DESC");                                        
         
         return $returnArray;
-    }    
+    }  
+    
+    public function fetchStoryTags($id)
+    {
+        $returnArray = $this->executeSQL(
+                "SELECT T.* "
+                . "FROM DEPOSIT_TAGS DF, TAG T "
+                . "WHERE DF.DEPOSIT = " . $id . " "
+                . "AND DF.TAG = T.ID "
+                . "ORDER BY T.TITLE ASC  ");          
+                
+        return $returnArray;
+    }
     
     /*
      *      Fetch all those tags

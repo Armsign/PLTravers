@@ -53,6 +53,9 @@ function Deposit()
         case ("flaggedStories"):
             echo $deposits->fetchFlaggedStories($_GET["token"]);            
             break;           
+        case ("storyTags"):
+            echo $deposits->fetchStoryTags($token, $id);
+            break;         
         
         //  Kiosk functions
         case ("create"):

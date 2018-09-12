@@ -108,8 +108,23 @@ class Deposits
         unset($daSafe);
         
         return $returnArray;
-    }  
+    }      
     
+    public function fetchStoryTags($token, $id)
+    {
+        $returnArray = '';
+        
+        //  Need to check if this is a user
+        $daSafe = new DaSafe();       
+        if ($daSafe->IsValidToken($token))
+        {
+            $returnArray = json_encode($daSafe->fetchStoryTags($id));
+        }        
+        unset($daSafe);
+
+        return $returnArray;                
+    }    
+        
     /*
      *      Kiosk Functions
      */
