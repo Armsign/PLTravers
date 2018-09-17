@@ -8,8 +8,20 @@
 class Tags
 {
     
-    public $id = 0;
-    public $title = '';
-    public $description = '';
+    public function createBridge($token, $storyID, $tagID)
+    {
+        $returnValue = $storyID . '-' . $tagID;
+
+
+        $mySafe = new DaSafe();          
+        if ($mySafe->IsValidToken($token))
+        {          
+            $returnValue = json_encode($mySafe->createBridge($storyID, $tagID));
+        }
+        unset($mySafe);
+
+        
+        return $returnValue;
+    }   
     
 }

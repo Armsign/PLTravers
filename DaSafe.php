@@ -24,7 +24,7 @@ class DaSafe
 
     public function updateStory($staffId, $id, $promptId = 0, $email, $nomDePlume, $title, $story, $hasConsent, $useEmail = 0, $isPlayable = 0)
     {       
-        $returnArray = $id;
+        $returnArray = ($id * 1);
         
         //  Validate the token to get the user id
         //  Now I don't really like much of this at all
@@ -61,13 +61,12 @@ class DaSafe
                     $stmt = $this->mysqli->prepare($sql);
                     $stmt->bind_param('isssisii', $promptId, $title, $email, $nomDePlume, $isPlayable, $story, $hasConsent, $useEmail);
                     
+                    $returnArray = mysqli_insert_id($this->mysqli);
                 }
 
                 /* execute prepared statement */
                 $stmt->execute();                            
-                $stmt->close();            
-                
-                $returnArray = mysqli_insert_id($this->mysqli);
+                $stmt->close();                            
             }
 
             $this->mysqli->close();            
@@ -150,6 +149,22 @@ class DaSafe
             //  We also need the login ...
             $sql = "DELETE FROM DEPOSIT_TAGS WHERE TAG = " . $id . ";";
             $returnArray = $this->transactionalSQL($sql);                                        
+            
+        }        
+
+        return $returnArray;
+    }    
+    
+    public function createBridge($storyID, $tagID)
+    {
+        //  Validate the token to get the user id       
+        $returnArray = array();
+        
+        if ($storyID > 0 && $tagID > 0)
+        {
+            
+            $sql = "INSERT INTO DEPOSIT_TAGS (DEPOSIT, TAG) VALUES (" . $storyID . ", " . $tagID . ")";            
+            $returnArray = $this->transactionalSQL($sql);                                                  
             
         }        
 
@@ -252,14 +267,15 @@ class DaSafe
     }  
     
     public function fetchStoryTags($id)
-    {
-        $returnArray = $this->executeSQL(
-                "SELECT T.* "
-                . "FROM DEPOSIT_TAGS DF, TAG T "
+    {        
+        $sql = "SELECT T.* "
+                . "FROM DEPOSIT_TAGS DF, TAGS T "
                 . "WHERE DF.DEPOSIT = " . $id . " "
                 . "AND DF.TAG = T.ID "
-                . "ORDER BY T.TITLE ASC  ");          
-                
+                . "ORDER BY T.TITLE ASC  ";
+        
+        $returnArray = $this->executeSQL($sql);          
+        
         return $returnArray;
     }
     

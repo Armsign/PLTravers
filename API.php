@@ -78,8 +78,6 @@ function Deposit()
     return;
 }
 
-
-
 function Administer()
 {    
     $login = new Logins();                    
@@ -180,7 +178,18 @@ function Tags()
             echo json_encode($mySafe->fetchTags());            
             
             unset($mySafe);
-            break;        
+            break; 
+        case ("bridge"):
+            $tags = new Tags();
+            
+            $token = trim($_GET["token"]);                  
+            $storyID = trim($_GET["storyID"]);      
+            $tagID = trim($_GET["tagID"]);             
+            
+            echo $tags->createBridge($token, $storyID, $tagID);
+            
+            unset($tags);
+            break;
         default:
             echo 'Tags Attempted';
             break;       
