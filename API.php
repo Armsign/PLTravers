@@ -32,6 +32,10 @@ function Deposit()
     $useEmail = trim($_GET["useEmail"]);        
     $isPlayable = trim($_GET["isPlayable"]);
     
+    
+    echo $charDesign;
+    
+    
     switch ($_GET["method"])
     { 
         //  Admin functions
