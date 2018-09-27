@@ -13,7 +13,7 @@ class Deposits
      *      Admin functions
      */
     
-    public function updateStory($token, $id, $promptId, $email, $nomDePlume, $title, $story, $hasConsent = 0, $useEmail = 0, $isPlayable = 0)
+    public function updateStory($token, $id, $promptId, $email, $nomDePlume, $title, $story, $charDesign, $hasConsent = 0, $useEmail = 0, $isPlayable = 0)
     {
         //  Need to check if this is a user
         $returnValue = '';
@@ -27,7 +27,7 @@ class Deposits
                 $logins = $daSafe->fetchToken($token);            
                 $staffId = $logins[0]["ID"];                            
                 
-                $returnValue = json_encode($daSafe->updateStory($staffId, $id, $promptId, $email, $nomDePlume, $title, $story, $hasConsent, $useEmail, $isPlayable));
+                $returnValue = json_encode($daSafe->updateStory($staffId, $id, $promptId, $email, $nomDePlume, $title, $story, $charDesign, $hasConsent, $useEmail, $isPlayable));
             }
         }
         unset($daSafe);
@@ -129,7 +129,7 @@ class Deposits
      *      Kiosk Functions
      */
     
-    public function createStory($promptID, $email, $nomDePlume, $story, $hasConsent = 0, $useEmail = 0)
+    public function createStory($promptID, $email, $nomDePlume, $story, $charDesign, $hasConsent = 0, $useEmail = 0)
     {
         $returnValue = '';
         
@@ -137,7 +137,7 @@ class Deposits
         {
             $mySafe = new DaSafe();
             
-            $returnValue = json_encode($mySafe->updateStory(0, 0, $promptId, $email, $nomDePlume, 'Anon', $story, $hasConsent, $useEmail, 0));
+            $returnValue = json_encode($mySafe->updateStory(0, 0, $promptId, $email, $nomDePlume, 'Anon', $story, $charDesign, $hasConsent, $useEmail, 0));
             unset($mySafe);
         }
         

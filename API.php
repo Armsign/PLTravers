@@ -26,7 +26,8 @@ function Deposit()
     $email = trim($_GET["email"]);
     $nomDePlume = trim($_GET["nomDePlume"]);                
     $title = trim($_GET["title"]);
-    $story = trim($_GET["story"]);      
+    $story = trim($_GET["story"]);  
+    $charDesign = trim($_GET["charDesign"]);      
     $hasConsent = trim($_GET["hasConsent"]);
     $useEmail = trim($_GET["useEmail"]);        
     $isPlayable = trim($_GET["isPlayable"]);
@@ -36,7 +37,7 @@ function Deposit()
         //  Admin functions
         case ("update"):    
                        
-            echo $deposits->updateStory($token, $id, $promptId, $email, $nomDePlume, $title, $story, $hasConsent, $useEmail, $isPlayable);
+            echo $deposits->updateStory($token, $id, $promptId, $email, $nomDePlume, $title, $story, $charDesign, $hasConsent, $useEmail, $isPlayable);
             break;        
         case ("delete"):
             echo $deposits->deleteStory($token, $id);
@@ -59,7 +60,7 @@ function Deposit()
         
         //  Kiosk functions
         case ("create"):
-            echo $deposits->createStory($promptId, $email, $nomDePlume, $story, $hasConsent, $useEmail);
+            echo $deposits->createStory($promptId, $email, $nomDePlume, $story, $charDesign, $hasConsent, $useEmail);
             break;        
         case ("nomdeplume"):
             echo $deposits->fetchNomDePlume($email);

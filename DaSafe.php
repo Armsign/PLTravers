@@ -22,7 +22,7 @@ class DaSafe
      *      Actual Story creation
      */
 
-    public function updateStory($staffId, $id, $promptId = 0, $email, $nomDePlume, $title, $story, $hasConsent, $useEmail = 0, $isPlayable = 0)
+    public function updateStory($staffId, $id, $promptId = 0, $email, $nomDePlume, $title, $story, $charDesign, $hasConsent, $useEmail = 0, $isPlayable = 0)
     {       
         $returnArray = ($id * 1);
         
@@ -44,27 +44,28 @@ class DaSafe
                 {            
                     $sql = "UPDATE DEPOSITS SET PROMPT_ID = ?, TITLE = ?, STORED_BY = ?, STORED_AS = ?, "
                             . "IS_PLAYABLE = ?, REVIEWED_BY = ?, HAS_CONSENT = ?, USE_EMAIL = ?, "                                                
-                            . "REVIEWED_ON = NOW(), TRANSCRIPTION = ? WHERE ID = ?;";
+                            . "REVIEWED_ON = NOW(), TRANSCRIPTION = ?, CHARARCTER_DESIGN = ? WHERE ID = ?;";
                     
                     $stmt = $this->mysqli->prepare($sql);                    
-                    $stmt->bind_param('isssiiiisi', $promptId, $title, $email, $nomDePlume, $isPlayable, $staffId, $hasConsent, $useEmail, $story, $id);
+                    $stmt->bind_param('isssiiiissi', $promptId, $title, $email, 
+                            $nomDePlume, $isPlayable, $staffId, $hasConsent, 
+                            $useEmail, $story, $charDesign, $id);
 
                 } else {
                     
                    $sql = "INSERT INTO DEPOSITS ( PROMPT_ID, "
                         . "TITLE, STORED_BY, STORED_AS, STORED_AT, "
                         . "STORED_ON, AUDIO_TYPE, AUDIO_LENGTH, IS_PLAYABLE, "
-                        . "IS_TRANSCRIBED, TRANSCRIPTION, HAS_CONSENT, USE_EMAIL "
+                        . "IS_TRANSCRIBED, TRANSCRIPTION, CHARACTER_DESIGN, HAS_CONSENT, USE_EMAIL "
                         . ") VALUES (?, ?, ?, ?, 'N/A', NOW(), 'N/A', 0, ?, "
-                        . "1, ?, ?, ?);";                         
+                        . "1, ?, ?, ?, ?);";                         
                     
                     $stmt = $this->mysqli->prepare($sql);
-                    $stmt->bind_param('isssisii', $promptId, $title, $email, $nomDePlume, $isPlayable, $story, $hasConsent, $useEmail);
+                    $stmt->bind_param('isssissii', $promptId, $title, $email, $nomDePlume, $isPlayable, $story, $charDesign, $hasConsent, $useEmail);
                     
                     $returnArray = mysqli_insert_id($this->mysqli);
                 }
 
-                /* execute prepared statement */
                 $stmt->execute();                            
                 $stmt->close();                            
             }
