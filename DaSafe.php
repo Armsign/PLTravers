@@ -22,7 +22,7 @@ class DaSafe
      *      Actual Story creation
      */
 
-    public function updateStory($staffId, $id, $promptId = 0, $email, $nomDePlume, $title, $story, $charDesign, $hasConsent, $useEmail = 0, $isPlayable = 0)
+    public function updateStory($staffId, $id, $promptId = 0, $visitorID = '', $email, $nomDePlume, $title, $story, $charDesign, $hasConsent, $useEmail = 0, $isPlayable = 0)
     {       
         $returnArray = ($id * 1);
         
@@ -54,14 +54,14 @@ class DaSafe
                 } else {
                     
                    $sql = "INSERT INTO DEPOSITS ( PROMPT_ID, "
-                        . "TITLE, STORED_BY, STORED_AS, STORED_AT, "
+                        . "TITLE, VISITOR_ID, STORED_BY, STORED_AS, STORED_AT, "
                         . "STORED_ON, AUDIO_TYPE, AUDIO_LENGTH, IS_PLAYABLE, "
                         . "IS_TRANSCRIBED, TRANSCRIPTION, CHARACTER_DESIGN, HAS_CONSENT, USE_EMAIL "
-                        . ") VALUES (?, ?, ?, ?, 'N/A', NOW(), 'N/A', 0, ?, "
+                        . ") VALUES (?, ?, ?, ?, ?, 'N/A', NOW(), 'N/A', 0, ?, "
                         . "1, ?, ?, ?, ?);";                         
                     
                     $stmt = $this->mysqli->prepare($sql);
-                    $stmt->bind_param('isssissii', $promptId, $title, $email, $nomDePlume, $isPlayable, $story, $charDesign, $hasConsent, $useEmail);
+                    $stmt->bind_param('issssissii', $promptId, $title, $visitorID, $email, $nomDePlume, $isPlayable, $story, $charDesign, $hasConsent, $useEmail);
                     
                     $returnArray = mysqli_insert_id($this->mysqli);
                 }

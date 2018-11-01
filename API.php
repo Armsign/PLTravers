@@ -23,6 +23,7 @@ function Deposit()
     $token = trim($_GET["token"]);                  
     $id = trim($_GET["id"]);      
     $promptId = trim($_GET["promptId"]);      
+    $visitorID = trim($_GET["visitorID"]);    
     $email = trim($_GET["email"]);
     $nomDePlume = trim($_GET["nomDePlume"]);                
     $title = trim($_GET["title"]);
@@ -31,10 +32,6 @@ function Deposit()
     $hasConsent = trim($_GET["hasConsent"]);
     $useEmail = trim($_GET["useEmail"]);        
     $isPlayable = trim($_GET["isPlayable"]);
-    
-    
-    echo $charDesign;
-    
     
     switch ($_GET["method"])
     { 
@@ -64,7 +61,7 @@ function Deposit()
         
         //  Kiosk functions
         case ("create"):
-            echo $deposits->createStory($promptId, $email, $nomDePlume, $story, $charDesign, $hasConsent, $useEmail);
+            echo $deposits->createStory($promptId, $visitorID, $email, $nomDePlume, $story, $charDesign, $hasConsent, $useEmail);
             break;        
         case ("nomdeplume"):
             echo $deposits->fetchNomDePlume($email);

@@ -129,7 +129,7 @@ class Deposits
      *      Kiosk Functions
      */
     
-    public function createStory($promptID, $email, $nomDePlume, $story, $charDesign, $hasConsent = 0, $useEmail = 0)
+    public function createStory($promptID, $email, $visitorID = '', $nomDePlume, $story, $charDesign, $hasConsent = 0, $useEmail = 0)
     {
         $returnValue = '';
         
@@ -137,7 +137,7 @@ class Deposits
         {
             $mySafe = new DaSafe();
             
-            $returnValue = json_encode($mySafe->updateStory(0, 0, $promptId, $email, $nomDePlume, 'Anon', $story, $charDesign, $hasConsent, $useEmail, 0));
+            $returnValue = json_encode($mySafe->updateStory(0, 0, $promptId, $email, $visitorID, $nomDePlume, 'Anon', $story, $charDesign, $hasConsent, $useEmail, 0));
             unset($mySafe);
         }
         
