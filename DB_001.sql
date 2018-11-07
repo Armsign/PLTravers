@@ -114,10 +114,3 @@ CREATE TABLE TAGS (
 
 INSERT INTO TAGS (ID, TITLE, DESCRIPTION) VALUES
 (1, 'PL Travers', 'This content mentions PL Travers directly');
-
-
-
-http://192.168.1.2/Vault/API.php?action=deposit&
-method=storyTags&
-token=c4fbb242c5ba845c3271e660fefe45d8072814c412d044e52cb530a6fe7e65a1&
-id=00000000000000000007

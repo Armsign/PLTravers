@@ -31,7 +31,7 @@ function Deposit()
     $charDesign = trim($_GET["charDesign"]);      
     $hasConsent = trim($_GET["hasConsent"]);
     $useEmail = trim($_GET["useEmail"]);        
-    $isPlayable = trim($_GET["isPlayable"]);
+    $isPlayable = trim($_GET["isPlayable"]);   
     
     switch ($_GET["method"])
     { 

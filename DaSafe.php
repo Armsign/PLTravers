@@ -21,10 +21,10 @@ class DaSafe
     /*
      *      Actual Story creation
      */
-
-    public function updateStory($staffId, $id, $promptId = 0, $visitorID = '', $email, $nomDePlume, $title, $story, $charDesign, $hasConsent, $useEmail = 0, $isPlayable = 0)
+    
+    public function updateStory($staffId, $id, $promptId, $visitorID, $email, $nomDePlume, $title, $story, $charDesign, $hasConsent, $useEmail = 0, $isPlayable = 0)
     {       
-        $returnArray = ($id * 1);
+        $returnArray = ($id * 1);        
         
         //  Validate the token to get the user id
         //  Now I don't really like much of this at all
@@ -41,24 +41,61 @@ class DaSafe
             } else {              
                 
                 if ($id > 0)
-                {            
-                    $sql = "UPDATE DEPOSITS SET PROMPT_ID = ?, TITLE = ?, STORED_BY = ?, STORED_AS = ?, "
-                            . "IS_PLAYABLE = ?, REVIEWED_BY = ?, HAS_CONSENT = ?, USE_EMAIL = ?, "                                                
-                            . "REVIEWED_ON = NOW(), TRANSCRIPTION = ?, CHARARCTER_DESIGN = ? WHERE ID = ?;";
+                {    
+                                        
+                    $sql = "UPDATE DEPOSITS "
+                            . "SET PROMPT_ID = ?, "     //  i
+                            . "TITLE = ?, "             //  s
+                            . "STORED_BY = ?, "         //  s
+                            . "STORED_AS = ?, "         //  s
+                            . "IS_PLAYABLE = ?, "       //  i
+                            . "REVIEWED_BY = ?, "       //  i
+                            . "HAS_CONSENT = ?, "       //  i
+                            . "USE_EMAIL = ?, "         //  i                                      
+                            . "REVIEWED_ON = NOW(), "   //  NOW()
+                            . "TRANSCRIPTION = ? "     //  s
+                            . "WHERE ID = ?;";          //  i
                     
                     $stmt = $this->mysqli->prepare($sql);                    
-                    $stmt->bind_param('isssiiiissi', $promptId, $title, $email, 
-                            $nomDePlume, $isPlayable, $staffId, $hasConsent, 
-                            $useEmail, $story, $charDesign, $id);
 
+                    $stmt->bind_param('isssiiiisi', $promptId, $title, $email, 
+                            $nomDePlume, $isPlayable, $staffId, $hasConsent, 
+                            $useEmail, $story, $id);
+                    
                 } else {
                     
-                   $sql = "INSERT INTO DEPOSITS ( PROMPT_ID, "
-                        . "TITLE, VISITOR_ID, STORED_BY, STORED_AS, STORED_AT, "
-                        . "STORED_ON, AUDIO_TYPE, AUDIO_LENGTH, IS_PLAYABLE, "
-                        . "IS_TRANSCRIBED, TRANSCRIPTION, CHARACTER_DESIGN, HAS_CONSENT, USE_EMAIL "
-                        . ") VALUES (?, ?, ?, ?, ?, 'N/A', NOW(), 'N/A', 0, ?, "
-                        . "1, ?, ?, ?, ?);";                         
+                   $sql = "INSERT INTO DEPOSITS ( "
+                           . "PROMPT_ID, "          //  i
+                           . "TITLE, "              //  s
+                           . "VISITOR_ID, "         //  s
+                           . "STORED_BY, "          //  s
+                           . "STORED_AS, "          //  s
+                           . "STORED_AT, "          //  N/A
+                           . "STORED_ON, "          //  NOW()
+                           . "AUDIO_TYPE, "         //  N/A
+                           . "AUDIO_LENGTH, "       //  0
+                           . "IS_PLAYABLE, "        //  i
+                           . "IS_TRANSCRIBED, "     //  1
+                           . "TRANSCRIPTION, "      //  s
+                           . "CHARACTER_DESIGN, "   //  s
+                           . "HAS_CONSENT, "        //  i
+                           . "USE_EMAIL "           //  i
+                        . ") VALUES ("
+                           . "?, "                  //  i
+                           . "?, "                  //  s
+                           . "?, "                  //  s
+                           . "?, "                  //  s
+                           . "?, "                  //  s
+                           . "'N/A', "              //  N/A
+                           . "NOW(), "              //  NOW()
+                           . "'N/A', "              //  N/A
+                           . "0, "                  //  0
+                           . "?, "                  //  i
+                           . "1, "                  //  1
+                           . "?, "                  //  s
+                           . "?, "                  //  s
+                           . "?, "                  //  i
+                           . "?);";                 //  i   
                     
                     $stmt = $this->mysqli->prepare($sql);
                     $stmt->bind_param('issssissii', $promptId, $title, $visitorID, $email, $nomDePlume, $isPlayable, $story, $charDesign, $hasConsent, $useEmail);
