@@ -12,7 +12,65 @@ require_once("Deposits.php");
 
 function Withdraw()
 {    
-    echo 'Withdrawal Attempted';
+    $deposits = new Deposits();
+
+    $token = trim($_GET["token"]);                  
+    $id = trim($_GET["id"]);      
+    $promptId = trim($_GET["promptId"]);      
+    $visitorID = trim($_GET["visitorID"]);    
+    $email = trim($_GET["email"]);
+    $nomDePlume = trim($_GET["nomDePlume"]);                
+    $title = trim($_GET["title"]);
+    $story = trim($_GET["story"]);  
+    $charDesign = trim($_GET["charDesign"]);      
+    $hasConsent = trim($_GET["hasConsent"]);
+    $useEmail = trim($_GET["useEmail"]);        
+    $isPlayable = trim($_GET["isPlayable"]);   
+    
+    switch ($_GET["method"])
+    { 
+        //  Admin functions
+        case ("update"):    
+                       
+            echo $deposits->updateStory($token, $id, $promptId, $email, $nomDePlume, $title, $story, $charDesign, $hasConsent, $useEmail, $isPlayable);
+            break;        
+        case ("delete"):
+            echo $deposits->deleteStory($token, $id);
+            break;        
+        case ("newStories"):
+            echo $deposits->fetchNewStories($_GET["token"]);
+            break;
+        case ("oldStories"):
+            echo $deposits->fetchOldStories($_GET["token"]);
+            break;               
+        case ("deadStories"):
+            echo $deposits->fetchDeadStories($_GET["token"]);
+            break;                 
+        case ("flaggedStories"):
+            echo $deposits->fetchFlaggedStories($_GET["token"]);            
+            break;           
+        case ("storyTags"):
+            echo $deposits->fetchStoryTags($token, $id);
+            break;         
+        
+        //  Kiosk functions
+        case ("create"):
+            echo $deposits->createStory($promptId, $visitorID, $email, $nomDePlume, $story, $charDesign, $hasConsent, $useEmail);
+            break;        
+        case ("nomdeplume"):
+            echo $deposits->fetchNomDePlume($email);
+            break;        
+        case ("consent"):
+            echo $deposits->hasConsent($email);
+            break;        
+        
+        default: 
+            echo "Deposit Operation Attempted";
+            break;
+    }
+
+    unset($deposits);
+
     return;
 }
 
@@ -77,6 +135,30 @@ function Deposit()
 
     unset($deposits);
 
+    return;
+}
+
+function BankDeposit($jsonPayLoad)
+{
+    $deposits = new Deposits();
+
+    //  Parse the payload
+    $token = $jsonPayLoad->TOKEN;                  
+    $id = $jsonPayLoad->ID;
+    $promptId = $jsonPayLoad->PROMPTID;      
+    $email = $jsonPayLoad->EMAIL;
+    $nomDePlume = $jsonPayLoad->NOMDEPLUME;
+    $title = $jsonPayLoad->TITLE;
+    $story = $jsonPayLoad->STORY;
+    $charDesign = $jsonPayLoad->TOKEN;
+    $hasConsent = $jsonPayLoad->HASCONSENT;
+    $useEmail = $jsonPayLoad->USEEMAIL;
+    $isPlayable = $jsonPayLoad->ISPLAYABLE;
+    
+    echo $deposits->updateStory($token, $id, $promptId, $email, $nomDePlume, $title, $story, $charDesign, $hasConsent, $useEmail, $isPlayable);    
+    
+    unset($deposits);
+    
     return;
 }
 
@@ -200,25 +282,41 @@ function Tags()
     return;   
 }
 
-//  This switch effectively maps to the API calls ... 
-switch($_GET["action"])
+if ($_SERVER['REQUEST_METHOD'] === 'POST') 
 {
-    case ("deposit"):
-        Deposit();
-        break;
-    case ("withdraw"):
-        Withdraw();
-        break;    
-    case ("administer"):
-        Administer();
-        break;     
-    case ("members"):
-        Members();
-        break;     
-    case ("tags"):
-        Tags();
-        break;
-    default: 
-        echo "Bad API Call";
-        break;
+
+    $payLoad = file_get_contents("php://input");
+    
+    //  Turn it into data
+    $jsonPayLoad = json_decode($payLoad);
+    
+    //  Now do something with it
+    BankDeposit($jsonPayLoad);
+
+    
+} else {
+
+    //  This switch effectively maps to the API calls ... 
+    switch($_GET["action"])
+    {
+        case ("deposit"):
+            Deposit();
+            break;
+        case ("withdraw"):
+            Withdraw();
+            break;    
+        case ("administer"):
+            Administer();
+            break;     
+        case ("members"):
+            Members();
+            break;     
+        case ("tags"):
+            Tags();
+            break;
+        default: 
+            echo "GET: Bad API Call";
+            break;
+    }    
+    
 }

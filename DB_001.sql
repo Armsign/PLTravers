@@ -36,7 +36,7 @@ CREATE TABLE DEPOSITS (
   AUDIO_LENGTH bigint(20) UNSIGNED NOT NULL DEFAULT 0,
   IS_PLAYABLE int(11) NOT NULL DEFAULT 0,
   IS_TRANSCRIBED int(11) NOT NULL DEFAULT 0,
-  TRANSCRIPTION varchar(8192) DEFAULT '',
+  TRANSCRIPTION MEDIUMTEXT DEFAULT '',
   CHARACTER_DESIGN varchar(1024) DEFAULT '',
   HAS_CONSENT int(11) NOT NULL DEFAULT 0,
   USE_EMAIL int(11) NOT NULL DEFAULT 0,
@@ -114,3 +114,18 @@ CREATE TABLE TAGS (
 
 INSERT INTO TAGS (ID, TITLE, DESCRIPTION) VALUES
 (1, 'PL Travers', 'This content mentions PL Travers directly');
+
+
+/*
+
+SELECT 	a.name, a.account_type, a.industry, c.last_name, c.first_name, c.title, c.primary_address_state, ea.email_address, parent.name AS MemberOf
+FROM 	accounts a
+JOIN	accounts_contacts ac ON a.id = ac.account_id AND ac.deleted = 0
+JOIN	contacts c ON ac.contact_id = c.id AND c.deleted = 0
+JOIN 	email_addr_bean_rel eb ON ac.contact_id = eb.bean_id
+JOIN	email_addresses ea ON eb.email_address_id = ea.id
+LEFT 	JOIN accounts parent ON a.parent_id = parent.id
+WHERE	a.deleted = 0 
+
+
+*/

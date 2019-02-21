@@ -28,6 +28,7 @@ class DaSafe
         
         //  Validate the token to get the user id
         //  Now I don't really like much of this at all
+
         if (strlen($nomDePlume) > 0 && strlen($story) > 0)
         {      
             
@@ -99,11 +100,18 @@ class DaSafe
                     
                     $stmt = $this->mysqli->prepare($sql);
                     $stmt->bind_param('issssissii', $promptId, $title, $visitorID, $email, $nomDePlume, $isPlayable, $story, $charDesign, $hasConsent, $useEmail);
-                    
-                    $returnArray = mysqli_insert_id($this->mysqli);
+                                        
                 }
 
-                $stmt->execute();                            
+                $stmt->execute();     
+                
+                if ($id === 0)               
+                {               
+                    $returnArray = mysqli_insert_id($this->mysqli);                
+                }
+                
+                echo $stmt->error;
+                
                 $stmt->close();                            
             }
 
