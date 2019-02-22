@@ -30,8 +30,7 @@ function Withdraw()
     switch ($_GET["method"])
     { 
         //  Admin functions
-        case ("update"):    
-                       
+        case ("update"):                           
             echo $deposits->updateStory($token, $id, $promptId, $email, $nomDePlume, $title, $story, $charDesign, $hasConsent, $useEmail, $isPlayable);
             break;        
         case ("delete"):
@@ -54,6 +53,13 @@ function Withdraw()
             break;         
         
         //  Kiosk functions
+        
+        case ("withdrawal"):            
+            $tag = trim($_GET["tag"]);                  
+            $orderBy = trim($_GET["orderBy"]);      
+            
+            echo $deposits->fetchWithdrawalStory($tag, $orderBy);
+            break;
         case ("create"):
             echo $deposits->createStory($promptId, $visitorID, $email, $nomDePlume, $story, $charDesign, $hasConsent, $useEmail);
             break;        
@@ -65,7 +71,7 @@ function Withdraw()
             break;        
         
         default: 
-            echo "Deposit Operation Attempted";
+            echo "Withdraw Operation Attempted";
             break;
     }
 

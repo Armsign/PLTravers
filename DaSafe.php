@@ -312,8 +312,41 @@ class DaSafe
         return $returnArray;
     }  
     
+    /*
+     *      Withdrawal stations
+     */
+    
+    public function fetchWithdrawalStory($tag, $orderBy)
+    {
+        
+        $sql = "SELECT D.* " .
+            "FROM TAGS T " .
+            "JOIN DEPOSIT_TAGS DT ON T.ID = DT.TAG " .
+            "JOIN DEPOSITS D ON DT.DEPOSIT = D.ID AND D.IS_PLAYABLE = 1 " .
+            "WHERE T.TITLE = '" . $tag . "' ";
+        
+        switch($orderBy)
+        {
+            case "AUTHOR":
+                $sql .= "ORDER BY D.STORED_AS ASC";
+                break;
+            case "POPULAR":
+                $sql .= "ORDER BY D.TITLE ASC";
+                break;            
+            case "TITLE":
+                $sql .= "ORDER BY D.TITLE DESC";
+                break;            
+            default:
+                $sql .= "ORDER BY D.STORED_ON DESC";
+                break;
+        }        
+        
+        return $this->executeSQL($sql);        
+    }     
+    
     public function fetchStoryTags($id)
     {        
+        
         $sql = "SELECT T.* "
                 . "FROM DEPOSIT_TAGS DF, TAGS T "
                 . "WHERE DF.DEPOSIT = " . $id . " "

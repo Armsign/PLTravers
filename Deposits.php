@@ -170,6 +170,22 @@ class Deposits
         }
         
         return $returnValue;      
-    }    
+    }
+
+    public function fetchWithdrawalStory($tag, $orderBy)
+    {
+        $returnArray = '';
+        
+        if (strlen($tag) > 0 && strlen($orderBy) > 0)
+        {
+            //  Need to check if this is a user
+            $daSafe = new DaSafe();       
+            $returnArray = json_encode($daSafe->fetchWithdrawalStory($tag, $orderBy));
+            unset($daSafe);
+        
+        }
+
+        return $returnArray;                
+    }        
                 
 }
