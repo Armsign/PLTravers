@@ -187,5 +187,22 @@ class Deposits
 
         return $returnArray;                
     }        
-                
+    
+    public function fetchWithdrawalStoryId($id)
+    {
+        $returnArray = '';
+        
+        if ($id > 0)
+        {
+            //  Need to check if this is a user
+            $daSafe = new DaSafe();       
+            $returnArray = json_encode($daSafe->fetchWithdrawalStoryId($id));
+            unset($daSafe);
+        
+        }
+
+        return $returnArray;                
+    }    
+    
+    
 }

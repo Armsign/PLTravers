@@ -344,6 +344,16 @@ class DaSafe
         return $this->executeSQL($sql);        
     }     
     
+    public function fetchWithdrawalStoryId($id)
+    {        
+        $sql = "SELECT D.* " .
+            "FROM   DEPOSITS D  " .
+            "WHERE  D.ID = " . $id . " " .
+            "AND    D.IS_PLAYABLE = 1";
+       
+        return $this->executeSQL($sql);        
+    }       
+    
     public function fetchStoryTags($id)
     {        
         

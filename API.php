@@ -60,6 +60,9 @@ function Withdraw()
             
             echo $deposits->fetchWithdrawalStory($tag, $orderBy);
             break;
+        case ("storyID"):            
+            echo $deposits->fetchWithdrawalStoryId($id);
+            break;        
         case ("create"):
             echo $deposits->createStory($promptId, $visitorID, $email, $nomDePlume, $story, $charDesign, $hasConsent, $useEmail);
             break;        
