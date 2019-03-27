@@ -334,7 +334,7 @@ class DaSafe
                 $sql .= "ORDER BY D.TITLE ASC";
                 break;            
             case "TITLE":
-                $sql .= "ORDER BY D.TITLE DESC";
+                $sql .= "ORDER BY D.TITLE ASC";
                 break;            
             default:
                 $sql .= "ORDER BY D.STORED_ON DESC";
