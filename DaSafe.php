@@ -319,30 +319,58 @@ class DaSafe
     public function fetchWithdrawalStory($tag, $orderBy)
     {
         
-        $sql = "SELECT D.* " .
-            "FROM TAGS T " .
-            "JOIN DEPOSIT_TAGS DT ON T.ID = DT.TAG " .
-            "JOIN DEPOSITS D ON DT.DEPOSIT = D.ID AND D.IS_PLAYABLE = 1 " .
-            "WHERE T.TITLE = '" . $tag . "' ";
-        
-        switch($orderBy)
+        if ($orderBy == "POPULAR")
         {
-            case "AUTHOR":
-                $sql .= "ORDER BY D.STORED_AS ASC";
-                break;
-            case "POPULAR":
-                $sql .= "ORDER BY D.TITLE ASC";
-                break;            
-            case "TITLE":
-                $sql .= "ORDER BY D.TITLE ASC";
-                break;            
-            default:
-                $sql .= "ORDER BY D.STORED_ON DESC";
-                break;
-        }        
+        
+            $sql = "SELECT D.*, COUNT(DM.ID) AS POPULAR " .
+                    "FROM TAGS T " .                         
+                    "JOIN DEPOSIT_TAGS DT ON T.ID = DT.TAG " .
+                    "JOIN DEPOSITS D ON DT.DEPOSIT = D.ID AND D.IS_PLAYABLE = 1 " .
+                    "LEFT JOIN DEPOSIT_METRICS DM ON D.ID = DM.DEPOSIT " .
+                    "WHERE T.TITLE = '" . $tag . "' " .                    
+                    "GROUP BY D.ID " .
+                    "ORDER BY POPULAR DESC";
+            
+        } else {
+                
+            $sql = "SELECT D.* " .
+                "FROM TAGS T " .
+                "JOIN DEPOSIT_TAGS DT ON T.ID = DT.TAG " .
+                "JOIN DEPOSITS D ON DT.DEPOSIT = D.ID AND D.IS_PLAYABLE = 1 " .
+                "WHERE T.TITLE = '" . $tag . "' ";
+
+            switch($orderBy)
+            {
+                case "AUTHOR":
+                    $sql .= "ORDER BY D.STORED_AS ASC";
+                    break;
+                case "TITLE":
+                    $sql .= "ORDER BY D.TITLE ASC";
+                    break;            
+                default:
+                    $sql .= "ORDER BY D.STORED_ON DESC";
+                    break;
+            }  
+            
+        }
         
         return $this->executeSQL($sql);        
     }     
+    
+    
+    public function updateMetrics($deposit, $visitorID)
+    {
+        //  Validate the token to get the user id
+        $returnArray = array();        
+        
+        $sql = "INSERT INTO DEPOSIT_METRICS ( DEPOSIT, LOVED_BY, LOVED_ON ) "
+                . "VALUES (" . $deposit . ", '" . $visitorID . "', NOW())";
+
+        $returnArray = $this->transactionalSQL($sql);                                               
+
+        return $returnArray;
+    }     
+    
     
     public function fetchWithdrawalStoryId($id)
     {        
@@ -368,6 +396,21 @@ class DaSafe
         return $returnArray;
     }
     
+    public function fetchStoryComments($id)
+    {        
+        
+        $sql = "SELECT DC.* "
+                . "FROM DEPOSIT_COMMENTS DC "
+                . "WHERE DC.DEPOSIT = " . $id . " "
+                . "AND DC.IS_INAPPROPRIATE = 0 "
+                . "ORDER BY DC.COMMENT_ON DESC";
+        
+        $returnArray = $this->executeSQL($sql);          
+        
+        return $returnArray;
+    }
+    
+    
     /*
      *      Fetch all those tags
      */
@@ -379,6 +422,42 @@ class DaSafe
     /*
      *      Member Token Handling
      */
+    
+    public function IsLovedDeposit($deposit, $visitorID)
+    {        
+        $logins =  $this->executeSQL("SELECT * FROM DEPOSIT_METRICS WHERE DEPOSIT = " . $deposit . " AND LOVED_BY = '"  . $visitorID . "'");
+
+        if (sizeof($logins) == 1)
+        { 
+            return true;            
+        }
+        
+        return false;         
+    }  
+    
+    public function IsValidDeposit($deposit)
+    {
+        $logins = $this->executeSQL("SELECT * FROM DEPOSITS WHERE ID = " . $deposit);
+
+        if (sizeof($logins) == 1)
+        { 
+            return true;            
+        }
+
+        return false;         
+    }      
+    
+    public function IsValidVisitorID($visitorID)
+    {
+        $logins = $this->executeSQL("SELECT * FROM DEPOSITS WHERE VISITOR_ID = '"  . $visitorID . "'");
+
+        if (sizeof($logins) > 0)
+        { 
+            return true;            
+        }
+        
+        return false;         
+    }
     
     public function IsValidToken($token)
     {       

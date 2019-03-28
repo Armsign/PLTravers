@@ -144,6 +144,52 @@ class Deposits
         return $returnValue;
     }    
     
+    public function loveStory($deposit, $visitorID)
+    {
+        $returnValue = '';
+        
+        if ($deposit > 0 && strlen($visitorID) > 0)
+        {   
+            $mySafe = new DaSafe();                    
+            
+            //  Have I already made a deposit?            
+            if ($mySafe->IsValidVisitorID($visitorID) &&  $mySafe->IsValidDeposit($deposit))
+            {
+
+                if (!$mySafe->IsLovedDeposit($deposit, $visitorID))
+                {                
+                    //  I havent even liked it once but I have made a deposit
+                    $returnValue = json_encode($mySafe->updateMetrics($deposit, $visitorID));                                        
+                }
+                
+            } else {
+                
+                $returnValue = "Invalid Visitor ID: " . $visitorID . " - " . $deposit;                                        
+                
+            }
+            
+            unset($mySafe);
+        }
+     
+        return $returnValue;
+    }    
+    
+    public function depositComments($id)
+    {
+        $returnValue = '';
+        
+        if ($deposit > 0)
+        {   
+            $mySafe = new DaSafe();                    
+            
+            $returnValue = json_encode($mySafe->updateMetrics($deposit, $visitorID));                                        
+            
+            unset($mySafe);
+        }
+     
+        return $returnValue;                
+    }
+    
     public function fetchNomDePlume($email)
     {
         $returnValue = '';

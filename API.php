@@ -59,7 +59,13 @@ function Withdraw()
             $orderBy = trim($_GET["orderBy"]);      
             
             echo $deposits->fetchWithdrawalStory($tag, $orderBy);
-            break;
+            break;        
+        case ("love"):         
+            echo $deposits->loveStory($id, $visitorID);
+            break;             
+        case ("comments"):         
+            echo $deposits->depositComments($id);
+            break;           
         case ("storyID"):            
             echo $deposits->fetchWithdrawalStoryId($id);
             break;        
