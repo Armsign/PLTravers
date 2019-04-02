@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * Description of Deposit
  *
@@ -128,6 +127,27 @@ class Deposits
     /*
      *      Kiosk Functions
      */
+    
+    public function sendEmails($id, $visitorID, $email) //  Which deposit, visitor and to whom is it going?
+    {
+        require_once "Mail.php";
+        
+        //  Let's get this sort right now ...
+        $to      = "paul@armsign.com.au";
+        $subject = "Maryborough Story Bank";
+        $message = "You're too hot. Like, if anything, you're too hot to actually date.";
+        $headers = 'From: storybank@maryborough.com.au' . "\r\n" .
+                    'Reply-To: storybank@maryborough.com.au' . "\r\n" .
+                    'X-Mailer: PHP/' . phpversion();   
+
+        if (mail($to, $subject, $message, $headers))
+        {
+            echo "Sent";            
+        } else {
+            echo "Fail";        
+        }
+        
+    }
     
     public function createStory($promptID, $email, $visitorID, $nomDePlume, $story, $charDesign, $hasConsent = 0, $useEmail = 0)
     {

@@ -21,11 +21,13 @@ function Withdraw()
     $email = trim($_GET["email"]);
     $nomDePlume = trim($_GET["nomDePlume"]);                
     $title = trim($_GET["title"]);
-    $story = trim($_GET["story"]);  
+    $story = trim($_GET["story"]); 
+    $emails = trim($_GET["emails"]);
+    $comment = trim($_GET["comments"]);
     $charDesign = trim($_GET["charDesign"]);      
     $hasConsent = trim($_GET["hasConsent"]);
     $useEmail = trim($_GET["useEmail"]);        
-    $isPlayable = trim($_GET["isPlayable"]);   
+    $isPlayable = trim($_GET["isPlayable"]);       
     
     switch ($_GET["method"])
     { 
@@ -53,7 +55,10 @@ function Withdraw()
             break;         
         
         //  Kiosk functions
-        
+        case ("email"):
+            echo $deposits->sendEmails($id, $visitorID, $emails);            
+            
+            break;
         case ("withdrawal"):            
             $tag = trim($_GET["tag"]);                  
             $orderBy = trim($_GET["orderBy"]);      
