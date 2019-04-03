@@ -127,11 +127,13 @@ class Deposits
     /*
      *      Kiosk Functions
      */
+
+    
+            
     
     public function sendEmails($id, $visitorID, $email) //  Which deposit, visitor and to whom is it going?
     {
-        require_once "Mail.php";
-        
+       
         //  Let's get this sort right now ...
         $to      = "paul@armsign.com.au";
         $subject = "Maryborough Story Bank";
@@ -140,13 +142,21 @@ class Deposits
                     'Reply-To: storybank@maryborough.com.au' . "\r\n" .
                     'X-Mailer: PHP/' . phpversion();   
 
-        if (mail($to, $subject, $message, $headers))
-        {
-            echo "Sent";            
-        } else {
-            echo "Fail";        
-        }
-        
+        try {
+
+            if (mail($to, $subject, $message, $headers))
+            {
+                echo "Sent";            
+            } else {
+                echo "Fail";        
+            }
+
+        } catch (Exception $e) {
+
+            echo 'Caught exception: ',  $e->getMessage(), "\n";
+
+        }        
+
     }
     
     public function createStory($promptID, $email, $visitorID, $nomDePlume, $story, $charDesign, $hasConsent = 0, $useEmail = 0)
@@ -194,7 +204,33 @@ class Deposits
         return $returnValue;
     }    
     
-    public function depositComments($id)
+    public function addComments($deposit, $visitorID, $comment)
+    {
+        $returnValue = '';
+        
+        if ($deposit > 0)
+        {   
+            $mySafe = new DaSafe();  
+            
+            //  Have I already made a deposit?            
+            if ($mySafe->IsValidVisitorID($visitorID) && $mySafe->IsValidDeposit($deposit))
+            {
+
+                $returnValue = json_encode($mySafe->addComment($deposit, $visitorID, $comment));  
+                
+            } else {
+                
+                $returnValue = "Invalid Visitor ID: " . $visitorID . " - " . $deposit;                                        
+                
+            }            
+            
+            unset($mySafe);
+        }
+     
+        return $returnValue;                
+    }    
+    
+    public function depositComments($deposit)
     {
         $returnValue = '';
         
@@ -202,7 +238,7 @@ class Deposits
         {   
             $mySafe = new DaSafe();                    
             
-            $returnValue = json_encode($mySafe->updateMetrics($deposit, $visitorID));                                        
+            $returnValue = json_encode($mySafe->fetchComments($deposit));                                        
             
             unset($mySafe);
         }

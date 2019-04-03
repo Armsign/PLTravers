@@ -356,8 +356,7 @@ class DaSafe
         
         return $this->executeSQL($sql);        
     }     
-    
-    
+        
     public function updateMetrics($deposit, $visitorID)
     {
         //  Validate the token to get the user id
@@ -410,6 +409,32 @@ class DaSafe
         return $returnArray;
     }
     
+    public function addComment($deposit, $visitorID, $comment)
+    {
+        //  Validate the token to get the user id
+        $returnArray = array();        
+        
+        $sql = "INSERT INTO DEPOSIT_COMMENTS ( COMMENT, COMMENT_BY, COMMENT_ON, DEPOSIT, "
+                . "IS_INAPPROPRIATE, REVIEWED_BY, REVIEWED_ON ) "
+                . "VALUES ('" . $comment . "', '" . $visitorID . "' , NOW(), " . $deposit . ", "
+                . "1, 0, NOW())";
+
+        $returnArray = $this->transactionalSQL($sql);   
+        
+        echo $sql;
+
+        return $returnArray;     
+    }    
+    
+    public function fetchComments($deposit)
+    {
+        //  Validate the token to get the user id
+        $returnArray = array();        
+        
+        $sql = "SELECT *, DATE_FORMAT(COMMENT_ON,'%d %b %Y') AS COMMENT_ON_FORMATTED FROM DEPOSIT_COMMENTS WHERE DEPOSIT = " . $deposit . " AND IS_INAPPROPRIATE = 0 ORDER BY COMMENT_ON DESC";
+        
+        return $this->executeSQL($sql);
+    }      
     
     /*
      *      Fetch all those tags
