@@ -37,19 +37,13 @@ function Withdraw()
             break;        
         case ("delete"):
             echo $deposits->deleteStory($token, $id);
-            break;        
-        case ("newStories"):
-            echo $deposits->fetchNewStories($_GET["token"]);
+            break;             
+        case ("approvedStories"):
+            echo $deposits->fetchApprovedStories($_GET["token"]);
             break;
-        case ("oldStories"):
-            echo $deposits->fetchOldStories($_GET["token"]);
+        case ("unApprovedStories"):
+            echo $deposits->fetchUnApprovedStories($_GET["token"]);
             break;               
-        case ("deadStories"):
-            echo $deposits->fetchDeadStories($_GET["token"]);
-            break;                 
-        case ("flaggedStories"):
-            echo $deposits->fetchFlaggedStories($_GET["token"]);            
-            break;           
         case ("storyTags"):
             echo $deposits->fetchStoryTags($token, $id);
             break;         

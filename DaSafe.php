@@ -278,39 +278,30 @@ class DaSafe
         return $returnArray;        
     }
     
-    public function fetchNewStories()
-    {
-        $returnArray = $this->executeSQL("SELECT * FROM DEPOSITS WHERE REVIEWED_BY = 0 ORDER BY STORED_ON DESC");                                        
+    public function fetchApprovedStories()
+    {        
+        $returnArray = $this->executeSQL("SELECT PROMPT_ID, TITLE, STORED_BY, STORED_AS, "
+                . "IS_PLAYABLE, REVIEWED_BY, HAS_CONSENT, USE_EMAIL, "
+                . "REVIEWED_ON, LEFT(TRANSCRIPTION, 32) AS TRANSCRIPTION, ID "
+                . "FROM DEPOSITS "
+                . "WHERE IS_PLAYABLE = 1 "
+                . "AND REVIEWED_BY > 0 "
+                . "ORDER BY STORED_ON DESC");                                        
 
-        return $returnArray;
+        return $returnArray;                
     }
     
-    public function fetchOldStories()
+    public function fetchUnApprovedStories()
     {
-        $returnArray = $this->executeSQL("SELECT * FROM DEPOSITS WHERE IS_PLAYABLE = 1 AND REVIEWED_BY > 0 ORDER BY STORED_ON DESC LIMIT 100");                                        
+        $returnArray = $this->executeSQL("SELECT PROMPT_ID, TITLE, STORED_BY, STORED_AS, "
+                . "IS_PLAYABLE, REVIEWED_BY, HAS_CONSENT, USE_EMAIL, "
+                . "REVIEWED_ON, LEFT(TRANSCRIPTION, 32) AS TRANSCRIPTION, ID "
+                . "FROM DEPOSITS "
+                . "WHERE IS_PLAYABLE = 0 "
+                . "ORDER BY STORED_ON DESC");                                        
 
-        return $returnArray;
-    }    
-    
-    public function fetchDeadStories()
-    {
-        $returnArray = $this->executeSQL("SELECT * FROM DEPOSITS WHERE IS_PLAYABLE = 0 AND REVIEWED_BY > 0 ORDER BY STORED_ON DESC LIMIT 100");                                        
-
-        return $returnArray;
-    }       
-    
-    public function fetchFlaggedStories()
-    {
-        $returnArray = $this->executeSQL(
-                "SELECT D.* "
-                . "FROM DEPOSIT_FLAGS DF, DEPOSITS D "
-                . "WHERE DF.REVIEWED_BY = 0 "
-                . "AND DF.IS_INAPPROPRIATE = 1 "
-                . "AND DF.DEPOSIT = D.ID "
-                . "ORDER BY D.STORED_ON DESC");                                        
-        
-        return $returnArray;
-    }  
+        return $returnArray;          
+    }
     
     /*
      *      Withdrawal stations

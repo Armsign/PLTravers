@@ -49,7 +49,7 @@ class Deposits
         return $returnArray;                
     }
     
-    public function fetchNewStories($token)
+    public function fetchApprovedStories($token)
     {
         $returnArray = '';
         
@@ -57,14 +57,14 @@ class Deposits
         $daSafe = new DaSafe();       
         if ($daSafe->IsValidToken($token))
         {
-            $returnArray = json_encode($daSafe->fetchNewStories());
+            $returnArray = json_encode($daSafe->fetchApprovedStories());
         }        
         unset($daSafe);
 
         return $returnArray;
-    }
+    }  
     
-    public function fetchOldStories($token)
+    public function fetchUnApprovedStories($token)
     {
         $returnArray = '';
         
@@ -72,42 +72,12 @@ class Deposits
         $daSafe = new DaSafe();       
         if ($daSafe->IsValidToken($token))
         {
-            $returnArray = json_encode($daSafe->fetchOldStories());
+            $returnArray = json_encode($daSafe->fetchUnApprovedStories());
         }        
         unset($daSafe);
 
         return $returnArray;
-    }    
-    
-    public function fetchDeadStories($token)
-    {
-        $returnArray = '';
-        
-        //  Need to check if this is a user
-        $daSafe = new DaSafe();       
-        if ($daSafe->IsValidToken($token))
-        {
-            $returnArray = json_encode($daSafe->fetchDeadStories());
-        }        
-        unset($daSafe);
-
-        return $returnArray;
-    }        
-    
-    public function fetchFlaggedStories($token)
-    {
-        $returnArray = '';
-        
-        //  Need to check if this is a user
-        $daSafe = new DaSafe();
-        if ($daSafe->IsValidToken($token))
-        {
-            $returnArray = json_encode($daSafe->fetchFlaggedStories());            
-        }
-        unset($daSafe);
-        
-        return $returnArray;
-    }      
+    }       
     
     public function fetchStoryTags($token, $id)
     {
@@ -127,10 +97,6 @@ class Deposits
     /*
      *      Kiosk Functions
      */
-
-    
-            
-    
     public function sendEmails($id, $visitorID, $email) //  Which deposit, visitor and to whom is it going?
     {
        
