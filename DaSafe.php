@@ -72,7 +72,8 @@ class DaSafe
                            . "STORED_BY, "          //  s
                            . "STORED_AS, "          //  s
                            . "STORED_AT, "          //  N/A
-                           . "STORED_ON, "          //  NOW()
+                           . "STORED_ON, "          //  NOW()                           
+                           . "REVIEWED_BY, "        //  i
                            . "AUDIO_TYPE, "         //  N/A
                            . "AUDIO_LENGTH, "       //  0
                            . "IS_PLAYABLE, "        //  i
@@ -88,7 +89,8 @@ class DaSafe
                            . "?, "                  //  s
                            . "?, "                  //  s
                            . "'N/A', "              //  N/A
-                           . "NOW(), "              //  NOW()
+                           . "NOW(), "              //  NOW()                           
+                           . "?, "                  //  i                           
                            . "'N/A', "              //  N/A
                            . "0, "                  //  0
                            . "?, "                  //  i
@@ -99,7 +101,9 @@ class DaSafe
                            . "?);";                 //  i   
                     
                     $stmt = $this->mysqli->prepare($sql);
-                    $stmt->bind_param('issssissii', $promptId, $title, $visitorID, $email, $nomDePlume, $isPlayable, $story, $charDesign, $hasConsent, $useEmail);
+                    $stmt->bind_param('issssiissii', $promptId, $title, $visitorID, 
+                            $email, $nomDePlume, $staffId, $isPlayable, $story, 
+                            $charDesign, $hasConsent, $useEmail);
                                         
                 }
 
@@ -282,7 +286,7 @@ class DaSafe
     {        
         $returnArray = $this->executeSQL("SELECT PROMPT_ID, TITLE, STORED_BY, STORED_AS, "
                 . "IS_PLAYABLE, REVIEWED_BY, HAS_CONSENT, USE_EMAIL, "
-                . "REVIEWED_ON, LEFT(TRANSCRIPTION, 32) AS TRANSCRIPTION, ID "
+                . "REVIEWED_ON, LEFT(TRANSCRIPTION, 32) AS TRANSCRIPTION, ID, STORED_ON "
                 . "FROM DEPOSITS "
                 . "WHERE IS_PLAYABLE = 1 "
                 . "AND REVIEWED_BY > 0 "
@@ -295,13 +299,20 @@ class DaSafe
     {
         $returnArray = $this->executeSQL("SELECT PROMPT_ID, TITLE, STORED_BY, STORED_AS, "
                 . "IS_PLAYABLE, REVIEWED_BY, HAS_CONSENT, USE_EMAIL, "
-                . "REVIEWED_ON, LEFT(TRANSCRIPTION, 32) AS TRANSCRIPTION, ID "
+                . "REVIEWED_ON, LEFT(TRANSCRIPTION, 32) AS TRANSCRIPTION, ID, STORED_ON "
                 . "FROM DEPOSITS "
                 . "WHERE IS_PLAYABLE = 0 "
                 . "ORDER BY STORED_ON DESC");                                        
 
         return $returnArray;          
     }
+    
+    public function fetchSingularStory($id)
+    {
+        $returnArray = $this->executeSQL("SELECT * FROM DEPOSITS WHERE ID = " . $id);                                        
+
+        return $returnArray;          
+    }    
     
     /*
      *      Withdrawal stations
@@ -417,6 +428,34 @@ class DaSafe
         return $returnArray;     
     }    
     
+    public function deleteComment($id)
+    {
+        //  Validate the token to get the user id
+        $returnArray = array();        
+        
+        $sql = "DELETE FROM DEPOSIT_COMMENTS WHERE ID = " . $id;
+
+        $returnArray = $this->transactionalSQL($sql);                                               
+
+        return $returnArray;         
+    }
+    
+    public function approveComment($id, $staffID)
+    {
+        //  Validate the token to get the user id
+        $returnArray = array();        
+        
+        $sql = "UPDATE DEPOSIT_COMMENTS SET "
+                . "IS_INAPPROPRIATE = 0, "
+                . "REVIEWED_BY = " . $staffID . ", "                
+                . "REVIEWED_ON = NOW() "
+                . "WHERE ID = " . $id;
+
+        $returnArray = $this->transactionalSQL($sql);                                               
+
+        return $returnArray;                
+    }
+    
     public function fetchComments($deposit)
     {
         //  Validate the token to get the user id
@@ -425,7 +464,17 @@ class DaSafe
         $sql = "SELECT *, DATE_FORMAT(COMMENT_ON,'%d %b %Y') AS COMMENT_ON_FORMATTED FROM DEPOSIT_COMMENTS WHERE DEPOSIT = " . $deposit . " AND IS_INAPPROPRIATE = 0 ORDER BY COMMENT_ON DESC";
         
         return $this->executeSQL($sql);
-    }      
+    }     
+    
+    public function fetchNewComments()
+    {
+        //  Validate the token to get the user id
+        $returnArray = array();        
+        
+        $sql = "SELECT *, DATE_FORMAT(COMMENT_ON,'%d %b %Y') AS COMMENT_ON_FORMATTED FROM DEPOSIT_COMMENTS WHERE IS_INAPPROPRIATE = 1 ORDER BY COMMENT_ON DESC";
+        
+        return $this->executeSQL($sql);
+    }     
     
     /*
      *      Fetch all those tags

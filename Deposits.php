@@ -18,15 +18,15 @@ class Deposits
         $returnValue = '';
         
         $daSafe = new DaSafe();
-        if ($daSafe->IsValidToken($token))
-        {                
+        
+        $staffData = $daSafe->fetchToken($token);
+        
+        if (count($staffData) == 1)
+        {           
             //  Get the user's id           
             if (strlen($email) > 0 && strlen($nomDePlume) > 0 && strlen($story) > 0)
-            {
-                $logins = $daSafe->fetchToken($token);            
-                $staffId = $logins[0]["ID"];                            
-                
-                $returnValue = json_encode($daSafe->updateStory($staffId, $id, $promptId, 0, $email, $nomDePlume, $title, $story, $charDesign, $hasConsent, $useEmail, $isPlayable));
+            {                
+                $returnValue = json_encode($daSafe->updateStory($staffData[0]['ID'] * 1, $id, $promptId, 0, $email, $nomDePlume, $title, $story, $charDesign, $hasConsent, $useEmail, $isPlayable));
             }
         }
         unset($daSafe);
@@ -92,6 +92,21 @@ class Deposits
         unset($daSafe);
 
         return $returnArray;                
+    }  
+    
+    public function fetchSingularStory($token, $id)
+    {
+        $returnArray = '';
+        
+        //  Need to check if this is a user
+        $daSafe = new DaSafe();       
+        if ($daSafe->IsValidToken($token))
+        {
+            $returnArray = json_encode($daSafe->fetchSingularStory($id));
+        }        
+        unset($daSafe);
+
+        return $returnArray;                       
     }    
         
     /*
@@ -212,6 +227,55 @@ class Deposits
         return $returnValue;                
     }
     
+    public function fetchNewComments($token)
+    {
+        $returnValue = '';
+        
+        //  Need to check if this is a user
+        $daSafe = new DaSafe();       
+        if ($daSafe->IsValidToken($token))
+        {                              
+            $returnValue = json_encode($daSafe->fetchNewComments());                                        
+        }
+        unset($daSafe);
+                    
+        return $returnValue;         
+    }
+    
+    public function deleteComment($token, $id)
+    {
+        $returnValue = '';
+        
+        //  Need to check if this is a user
+        $daSafe = new DaSafe();       
+        if ($daSafe->IsValidToken($token))
+        {                              
+            $returnValue = json_encode($daSafe->deleteComment($id));                                        
+        }
+        unset($daSafe);
+                    
+        return $returnValue;           
+    }
+    
+    public function approveComment($token, $id)
+    {
+        $returnValue = '';
+        
+        //  Need to check if this is a user
+        $daSafe = new DaSafe();
+        
+        $staffData = $daSafe->fetchToken($token);
+        
+        if (count($staffData) == 1)
+        {                  
+            $returnValue = json_encode($daSafe->approveComment($id, $staffData[0]['ID'] * 1));
+        }
+        
+        unset($daSafe);
+                    
+        return $returnValue;                   
+    }
+    
     public function fetchNomDePlume($email)
     {
         $returnValue = '';
@@ -270,7 +334,6 @@ class Deposits
         }
 
         return $returnArray;                
-    }    
-    
+    }        
     
 }

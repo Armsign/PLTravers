@@ -37,13 +37,7 @@ function Withdraw()
             break;        
         case ("delete"):
             echo $deposits->deleteStory($token, $id);
-            break;             
-        case ("approvedStories"):
-            echo $deposits->fetchApprovedStories($_GET["token"]);
-            break;
-        case ("unApprovedStories"):
-            echo $deposits->fetchUnApprovedStories($_GET["token"]);
-            break;               
+            break;                          
         case ("storyTags"):
             echo $deposits->fetchStoryTags($token, $id);
             break;         
@@ -66,7 +60,7 @@ function Withdraw()
             break;              
         case ("addComments"):         
             echo $deposits->addComments($id, $visitorID, $comment);
-            break;                         
+            break;      
         case ("storyID"):            
             echo $deposits->fetchWithdrawalStoryId($id);
             break;        
@@ -117,21 +111,27 @@ function Deposit()
         case ("delete"):
             echo $deposits->deleteStory($token, $id);
             break;        
-        case ("newStories"):
-            echo $deposits->fetchNewStories($_GET["token"]);
+        case ("approvedStories"):
+            echo $deposits->fetchApprovedStories($token);
             break;
-        case ("oldStories"):
-            echo $deposits->fetchOldStories($_GET["token"]);
-            break;               
-        case ("deadStories"):
-            echo $deposits->fetchDeadStories($_GET["token"]);
-            break;                 
-        case ("flaggedStories"):
-            echo $deposits->fetchFlaggedStories($_GET["token"]);            
-            break;           
+        case ("unApprovedStories"):
+            echo $deposits->fetchUnApprovedStories($token);
+            break;          
+        case ("singleStory"):
+            echo $deposits->fetchSingularStory($token, $id);            
+            break;        
         case ("storyTags"):
             echo $deposits->fetchStoryTags($token, $id);
-            break;         
+            break;  
+        case ("newComments"):
+            echo $deposits->fetchNewComments($token);
+            break;        
+        case ("approveComment"):
+            echo $deposits->approveComment($token, $id);
+            break; 
+        case ("deleteComment"):
+            echo $deposits->deleteComment($token, $id);
+            break; 
         
         //  Kiosk functions
         case ("create"):
@@ -165,8 +165,8 @@ function BankDeposit($jsonPayLoad)
     $email = $jsonPayLoad->EMAIL;
     $nomDePlume = $jsonPayLoad->NOMDEPLUME;
     $title = $jsonPayLoad->TITLE;
-    $story = $jsonPayLoad->STORY;
-    $charDesign = $jsonPayLoad->TOKEN;
+    $story = $jsonPayLoad->STORY;    
+    $charDesign = '';    
     $hasConsent = $jsonPayLoad->HASCONSENT;
     $useEmail = $jsonPayLoad->USEEMAIL;
     $isPlayable = $jsonPayLoad->ISPLAYABLE;
