@@ -1,5 +1,12 @@
 <?php
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require(__DIR__ . '/Libraries/PHPMailer/Exception.php');
+require(__DIR__ . '/Libraries/PHPMailer/PHPMailer.php');
+require(__DIR__ . '/Libraries/PHPMailer/SMTP.php');
+
 /**
  * Description of Deposit
  *
@@ -112,31 +119,71 @@ class Deposits
     /*
      *      Kiosk Functions
      */
-    public function sendEmails($id, $visitorID, $email) //  Which deposit, visitor and to whom is it going?
+    public function sendEmails($visitorID, $email) //  Which deposit, visitor and to whom is it going?
     {
-       
+        /*
         //  Let's get this sort right now ...
-        $to      = "paul@armsign.com.au";
+        $to      = "pdunn@propergauche.com";
         $subject = "Maryborough Story Bank";
-        $message = "You're too hot. Like, if anything, you're too hot to actually date.";
-        $headers = 'From: storybank@maryborough.com.au' . "\r\n" .
-                    'Reply-To: storybank@maryborough.com.au' . "\r\n" .
-                    'X-Mailer: PHP/' . phpversion();   
+        
+        $message = "<html><body>";
+        $message .= "<h1>You're too hot!</h1>";
+        $message .= "<p>Like, if anything, you're too hot to actually date.<p>";
+        $message .= '</body></html>';
+        
+        $headers = "From: storybank@maryborough.com.au\r\n";
+        $headers .= "Reply-To: donotreply@maryborough.com.au\r\n";
+        $headers .= "MIME-Version: 1.0\r\n";
+        $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";        
+        $headers .= "X-Mailer: PHP/' . phpversion();";                
 
+        if (mail($to, $subject, $message, $headers))
+        {
+            echo "Sent";            
+        } else {
+            echo "Fail";        
+        }
+        */
+        $mail = new PHPMailer(true);
+        
         try {
+            //Server settings
+            $mail->SMTPDebug = 2;                                       // Enable verbose debug output
+            $mail->isSMTP();                                            // Set mailer to use SMTP
+            $mail->Host       = 'smtp.gmail.com';  // Specify main and backup SMTP servers
+            $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+            $mail->Username   = 'paul@armsign.com.au';                     // SMTP username
+            $mail->Password   = 'Reddragon01';                               // SMTP password
+            $mail->SMTPSecure = 'tls';                                  // Enable TLS encryption, `ssl` also accepted
+            $mail->Port       = 587;                                    // TCP port to connect to
 
-            if (mail($to, $subject, $message, $headers))
-            {
-                echo "Sent";            
-            } else {
-                echo "Fail";        
-            }
+            //Recipients
+            $mail->setFrom('teller@storybank.com.au', 'Story Bank');
+            $mail->addAddress($email, 'Storybank Visitor');     // Add a recipient
+            $mail->addReplyTo('donotreply@storybank.com.au', 'Do Not Reply');
 
+            // Attachments
+
+            $mail->addAttachment(__DIR__ . '/Files/safeDoor.png');         // Add attachments
+
+            // Content
+            $mail->isHTML(true);                                  // Set email format to HTML
+            $mail->Subject = 'Storybank Withdrawal';
+            
+            $mail->Body .= "<h1>You're too hot!</h1>";
+            $mail->Body .= "<p>Like, if anything, you're too hot to actually date.<p>";            
+            
+            $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+
+            $mail->send();
+            
+            echo 'Message has been sent';
         } catch (Exception $e) {
-
-            echo 'Caught exception: ',  $e->getMessage(), "\n";
-
-        }        
+            
+            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            
+        }    
+       
 
     }
     
@@ -337,3 +384,24 @@ class Deposits
     }        
     
 }
+
+/*
+sendmail -F “Synology Station” -f “paul@armsign.com.au” -t pdunn@propergauche.com << EOF
+Subject: Synology Mail Test
+Seems to work. Hooray.
+EOF
+ * 
+ * 
+ * 
+ *              /usr/bin/ssmtp -t
+ * 
+ * 
+ 
+ sendmail -F “Synology Station” -f “paul@armsign.com.au” -t paul@armsign.com.au << EOF
+Subject: Synology Mail Test
+Seems to work. Hooray.
+EOF
+ 
+ * 
+ * 
+ */

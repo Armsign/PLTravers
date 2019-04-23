@@ -44,7 +44,7 @@ function Withdraw()
         
         //  Kiosk functions
         case ("email"):
-            echo $deposits->sendEmails($id, $visitorID, $emails);                        
+            echo $deposits->sendEmails($visitorID, $emails);                        
             break;
         case ("withdrawal"):            
             $tag = trim($_GET["tag"]);                  
