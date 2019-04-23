@@ -119,38 +119,16 @@ class Deposits
     /*
      *      Kiosk Functions
      */
-    public function sendEmails($visitorID, $email) //  Which deposit, visitor and to whom is it going?
+    public function sendEmails($visitorID, $email)
     {
-        /*
-        //  Let's get this sort right now ...
-        $to      = "pdunn@propergauche.com";
-        $subject = "Maryborough Story Bank";
-        
-        $message = "<html><body>";
-        $message .= "<h1>You're too hot!</h1>";
-        $message .= "<p>Like, if anything, you're too hot to actually date.<p>";
-        $message .= '</body></html>';
-        
-        $headers = "From: storybank@maryborough.com.au\r\n";
-        $headers .= "Reply-To: donotreply@maryborough.com.au\r\n";
-        $headers .= "MIME-Version: 1.0\r\n";
-        $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";        
-        $headers .= "X-Mailer: PHP/' . phpversion();";                
-
-        if (mail($to, $subject, $message, $headers))
-        {
-            echo "Sent";            
-        } else {
-            echo "Fail";        
-        }
-        */
+        //  Open a mailer, takes more time, but is working
         $mail = new PHPMailer(true);
         
         try {
             //Server settings
-            $mail->SMTPDebug = 2;                                       // Enable verbose debug output
+            $mail->SMTPDebug = 0;                                       // Enable verbose debug output
             $mail->isSMTP();                                            // Set mailer to use SMTP
-            $mail->Host       = 'smtp.gmail.com';  // Specify main and backup SMTP servers
+            $mail->Host       = 'smtp.gmail.com';                       // Specify main and backup SMTP servers
             $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
             $mail->Username   = 'paul@armsign.com.au';                     // SMTP username
             $mail->Password   = 'Reddragon01';                               // SMTP password
@@ -177,10 +155,11 @@ class Deposits
 
             $mail->send();
             
-            echo 'Message has been sent';
+            //  echo 'Message has been sent';
+            
         } catch (Exception $e) {
             
-            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            // echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
             
         }    
        
